@@ -4,13 +4,38 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Huper Bario Bruce 2</title>
+    <title>HuperBarioBruce2</title>
     <link href="style.css" rel="stylesheet">
     <script src="script.js"></script>
 </head>
 <body>
-    <div id="background"></div>
-    <div id="ground"></div>
-    <div id="bario"></div>
+    <div id="menu">
+        <div class="barreMenu">
+            <div class="barioLogo"></div>
+            <div class="heart"></div>
+            <div class="heart"></div>
+            <div class="heart"></div>
+        </div>
+
+        <div class="lineLevels">
+            <button>1</button>
+            <button>2</button>
+            <button>3</button>
+        </div>
+    </div>
+    <div id="intro" class=""> 
+        <!-- TODO retirer la class endIntro pour jouer après -->
+        <div class="textIntro"></div>
+        <div class="textIntro"></div>
+        <div class="textIntro"></div>
+        <button id="passText">Passer l'introduction</button>
+        <div class="lineJouer">
+            <button id="jouerBtn" class="jouerBtn"><div class="effect1"></div><div class="effect2"></div> <div class="text">Jouer</div></button>
+            <button id="pasJouerBtn" class="jouerBtn"><div class="effect1"></div><div class="effect2"></div> <div class="text">Pas jouer</div></button>
+        </div>
+        <div id="pasJouerText">Aller stp aide le !</div>
+    </div>
+    <canvas></canvas>
+    
 </body>
 </html>

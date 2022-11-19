@@ -1,3 +1,8 @@
+@font-face {
+    font-family: marioFont;
+    src: url(assets/fonts/Mario-Party-Hudson-Font.ttf);
+}
+
 *{
     margin: 0;
     padding: 0;
@@ -5,55 +10,249 @@
 
 body{
     overflow: hidden;
-    position: relative;
 }
 
-#background{
-    background-image: url("img/bg.jpeg");
-    background-size: auto 100vh;
-    height: 100vh;
-    width: 300vw;
-}
 
-#ground{
-    border-top: 5px solid black;
+/* Intro du jeu */
+#intro{
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background-color: black;
+    color: white;
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
-    height: 10vh;
-    background-color: brown;
+    height: 100%;
+}
+
+.textIntro{
+    padding-top: 2vh;
+    width: 70%;
+    height: fit-content;
+    font-family: marioFont;
+}
+
+#pasJouerText{
+    position: absolute;
+    font-family: marioFont;
+    left: 50%;
+    bottom: 10%;
+    transform: translateX(-50%);
+    align-items: center;
+    justify-content: center; 
+    display: none;
+}
+
+#passText{
+    position: absolute;
+    bottom: 10%;
+    right: 10%;
+    cursor: pointer;
+    border: 1px solid white;
+    color: white;
+    background-color: transparent;
+    padding: 1vh;
+    border-radius: 50px;
+    
+}
+
+.textIntroMove{
+    transform: translateY(-25vh);
+    transition: all .5s;
+}
+
+.lineJouer{
+    transform: scale(0);
     position: absolute;
     left: 0;
-    bottom: 0;
+    bottom: 30%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
 }
 
-#bario{
-    z-index: 99;
-    background-size: contain;
-    /* TODO mettre taille en fonction du ratio du sprite */
-    height: 100px;
-    width: 50px;
+.jouerBtn{
+    font-family: marioFont;
+    position: relative;
+    background-color: transparent;
+    border-radius: 50px;
+    width: 30%;
+    height: calc(3.5rem + 2vh - 10px); /* taille de police + padding haut et bas */
+    padding: 1vh;
+    border: 1px solid red;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.growthEffect{
+    animation: growth .5s linear;
+}
+
+@keyframes growth {
+    0% {
+        transform: scale(0);
+    }
+    80%{
+        transform: scale(1.2);
+    }
+    100%{
+        transform: scale(1);
+    }
+}
+
+.jouerBtn .effect1, .jouerBtn .effect2{
     position: absolute;
-    left: 10vw;
-    bottom: calc(10vh + 5px);
-    transition: transform linear 0.2s;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 30%;
+    height: 10vh;
+    border-radius: 50px;
+    transition: all 1s;
 }
 
-.pipe, #finishLine{
-    border: 4px solid black;
-    border-bottom: 0;
-    width: 50px;
-    height: 70px;
-    background-color: green;
+.jouerBtn .effect1{
+    background-color: #9aa9ed;
+    transform: translate(-50%, -50%) scale(0);
+}
+
+.jouerBtn .effect2{
+    transition-delay: .3s;
+    background-color: rgb(138, 101, 184);
+    transform: translate(-50%, -50%) scale(0);
+}
+
+.jouerBtn:hover .effect1, .jouerBtn:hover .effect2 {
+    transform: translate(-50%, -50%) scale(5);
+}
+
+.jouerBtn .text{
     position: absolute;
-    bottom: calc(10vh + 5px);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    color: white;
+    font-size: 3.5rem;
 }
 
-.grandPipe{
-    height: 250px;
+#jouerBtn{
+    animation: color-change1 1s linear infinite;
 }
 
-#finishLine{
+#pasJouerBtn{
+    animation: color-change2 1s linear infinite;
+}
+
+@keyframes color-change1 {
+    0%,100%{
+      border-color:#ff1493;
+    }
+  
+    25%{
+      border-color:#8b4513;
+    }
+    
+    50%{
+      border-color:#0091EA;
+    }
+    
+    75%{
+      border-color:#9400d3;
+    }
+}
+
+@keyframes color-change2 {
+    0%,100%{
+      border-color:#9400d3;
+    }
+  
+    25%{
+      border-color:#ff1493;
+    }
+    
+    50%{
+      border-color:#8b4513;
+    }
+    
+    75%{
+      border-color:#0091EA;
+    }
+}
+
+.endIntro{
+    transform-origin: bottom left;
+    transform: rotate(-90deg);
+    transition: all 0.7s;
+}
+
+/* Menu du jeu */
+/* Entete */
+#menu{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: blue;
+    transition: all 0.2s;
+}
+
+.barreMenu{
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    width: 100%;
     background-color: black;
-    height: 50vh;
-    width: 10px;
-    border: 2px solid red;
+    height: 15vh;
+}
+
+.barioLogo{
+    margin-left: 5vh;
+    background-image: url(assets/img/marioRun1.png);
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    width: 10vw;
+    height: 100%;
+}
+
+.heart{
+    filter: contrast(0);
+    width: 5vw;
+    height: 100%;
+    background-image: url(assets/img/heart.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    margin: 1vh;
+}
+
+/* Boutons lancement de niveau */
+.lineLevels{
+    height: 35vh;
+    width: 100%;
+    background-color: green;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.lineLevels button{
+    font-size: 7rem;
+    background-color: white;
+    border: 5px solid black;
+    width: 20vw;
+    height: 20vw;
+    border-radius: 100%;
+    cursor: pointer;
+}
+
+.levelFinished{
+    border: 5px solid red !important;
 }
