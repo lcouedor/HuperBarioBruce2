@@ -15,6 +15,7 @@ body{
 
 /* Intro du jeu */
 #intro{
+    z-index: 99;
     font-size: 2rem;
     display: flex;
     align-items: center;
@@ -199,7 +200,7 @@ body{
     position: absolute;
     top: 0;
     left: 0;
-    background-color: blue;
+    background-color: green;
     transition: all 0.2s;
 }
 
@@ -214,7 +215,7 @@ body{
 
 .barioLogo{
     margin-left: 5vh;
-    background-image: url(assets/img/marioRun1.png);
+    background-image: url(assets/img/mario/MarioStand1.png);
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
@@ -237,22 +238,59 @@ body{
 .lineLevels{
     height: 35vh;
     width: 100%;
-    background-color: green;
+    background-color: skyblue;
     display: flex;
     align-items: center;
-    justify-content: space-around;
+    justify-content: space-evenly;
+}
+
+.dottedLine{
+    left: 0;
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    border: 5px solid black;
+    transition: all 1s linear;
+}
+
+.dottedLine2{
+    width: 0;
+    border-color: gold;
 }
 
 .lineLevels button{
-    font-size: 7rem;
-    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+    font-family: marioFont;
+    box-shadow: inset 50px 50px 500px plum;
+    font-size: 10rem;
     border: 5px solid black;
-    width: 20vw;
-    height: 20vw;
+    width: 15vw;
+    height: 15vw;
     border-radius: 100%;
     cursor: pointer;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+/* .lineLevels button:not([disabled]){
+    box-shadow: 0px 0px 150px gold;
+    box-shadow: inset none;
+} */
+
+.lineLevels button:nth-child(1){
+    background-image: url(assets/img/lvl1/logo.png);
+}
+.lineLevels button:nth-child(2){
+    background-image: url(assets/img/lvl2/logo.png);
+}
+.lineLevels button:nth-child(3){
+    background-image: url(assets/img/lvl3/logo.png);
 }
 
 .levelFinished{
-    border: 5px solid red !important;
+    border: 5px double gold !important;
 }

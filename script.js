@@ -7,6 +7,14 @@ addEventListener('DOMContentLoaded', () => {
 
     const gravity = 1.5
     const distToWin = 2000 //distance à parcourir avant de valider le niveau
+    const tabImgPlayer = [[createImage("assets/img/mario/MarioStand0.png"), 
+                            createImage("assets/img/mario/MarioRunLeft1.png"), 
+                            createImage("assets/img/mario/MarioRunLeft1.png")],
+                            [createImage("assets/img/mario/MarioStand1.png"), 
+                            createImage("assets/img/mario/MarioRunRight1.png"), 
+                            createImage("assets/img/mario/MarioRunRight2.png")]]
+    let nbImagePlayer = 0
+    let sens = 1 // 1 = droite | 0 = gauche
 
     //déclaration des attributs du joueur
     class Player{
@@ -19,15 +27,16 @@ addEventListener('DOMContentLoaded', () => {
                 x : 0,
                 y : 10
             }
-            this.width = 30
-            this.height = 30
+            this.width = 50
+            this.height = 70
             this.jumpHeight = 20
             this.speed = 5
+            
         }
     
         draw(){
-            c.fillStyle = "red"
-            c.fillRect(this.position.x, this.position.y, this.width, this.height)
+            // c.drawImage(tabImgPlayer[sens][nbImagePlayer%tabImgPlayer.length], this.position.x, this.position.y, this.width, this.height)
+            c.drawImage(tabImgPlayer[sens][nbImagePlayer%tabImgPlayer[0].length], this.position.x, this.position.y, this.width, this.height)
         }
 
         update(){
@@ -42,19 +51,20 @@ addEventListener('DOMContentLoaded', () => {
 
     //décalration des attributs des plateformes, utilisées comme plateformes, tuyau, ou sol
     class Platform {
-        constructor(x,y,width,height,color) {
+        constructor(x,y,width,height,image) {
             this.position = {
                 x,
                 y
             }
             this.width = width
             this.height = height
-            this.color = color
+            this.image = image
         }
 
         draw() {
-            c.fillStyle = this.color
-            c.fillRect(this.position.x, this.position.y, this.width, this.height)
+            // c.fillStyle = this.color
+            // c.fillRect(this.position.x, this.position.y, this.width, this.height)
+            c.drawImage(this.image, this.position.x, this.position.y, this.width, this.height)
         }
     }
 
@@ -119,18 +129,46 @@ addEventListener('DOMContentLoaded', () => {
     function createLevel1(){
         platforms = [
             //les tuyaux
-            new Platform(600,700,50,80,"green"),
+            new Platform(600,700,50,80,createImage("assets/img/lvl1/platform.png")),
             //les plateformes
-            new Platform(450,670,100,40,"grey"), 
-            new Platform(650,610,100,40,"grey"),
+            new Platform(450,670,100,40,createImage("assets/img/lvl1/platform.png")), 
+            new Platform(650,610,100,40,createImage("assets/img/lvl1/platform.png")),
             //le sol
-            new Platform(0,750,900,100, "brown"),
-            new Platform(1000,750,10000,100, "brown")]
+            new Platform(0,750,900,100, createImage("assets/img/lvl1/ground.png")),
+            new Platform(1000,750,3000,100, createImage("assets/img/lvl1/ground.png"))]
+
+            genericOjects = [
+                new GenericObject (0, 0, createImage("assets/img/lvl1/background.png"), "background")]
     }
 
     function createLevel2(){
         platforms = [
-            new Platform(0,750,10000,100, "brown")]
+            //les tuyaux
+            new Platform(600,700,50,80,createImage("assets/img/lvl2/platform.png")),
+            //les plateformes
+            new Platform(450,670,100,40,createImage("assets/img/lvl2/platform.png")), 
+            new Platform(650,610,100,40,createImage("assets/img/lvl2/platform.png")),
+            //le sol
+            new Platform(0,750,900,100, createImage("assets/img/lvl2/ground.png")),
+            new Platform(1000,750,3000,100, createImage("assets/img/lvl2/ground.png"))]
+
+            genericOjects = [
+                new GenericObject (0, 0, createImage("assets/img/lvl1/background.png"), "background")]
+    }
+
+    function createLevel3(){
+        platforms = [
+            //les tuyaux
+            new Platform(600,700,50,80,createImage("assets/img/lvl2/platform.png")),
+            //les plateformes
+            new Platform(450,670,100,40,createImage("assets/img/lvl2/platform.png")), 
+            new Platform(650,610,100,40,createImage("assets/img/lvl2/platform.png")),
+            //le sol
+            new Platform(0,750,900,100, createImage("assets/img/lvl2/ground.png")),
+            new Platform(1000,750,3000,100, createImage("assets/img/lvl2/ground.png"))]
+
+            genericOjects = [
+                new GenericObject (0, 0, createImage("assets/img/lvl1/background.png"), "background")]
     }
 
     //initialisation des variables de l'environnement
@@ -144,11 +182,13 @@ addEventListener('DOMContentLoaded', () => {
             case 2:
                 createLevel2()
                 break
-            default: platforms = [new Platform(0,750,10000,100, "brown")]
+            case 3:
+                createLevel3()
+                break
+            default: platforms = [new Platform(0,750,10000,100, createImage("assets/img/lvl2/ground.png"))]
         }
 
-        genericOjects = [
-            new GenericObject (0, 0, createImage("assets/img/bg.jpeg"), "background")]
+        // console.log(genericOjects)
 
         scrollOffset = 0
         //résolution du bug qui maintenait l'avancement une fois respawn
@@ -176,6 +216,16 @@ addEventListener('DOMContentLoaded', () => {
             platform.draw()
         })
         player.update()
+
+        if(keys.right.pressed){
+            sens = 1
+            nbImagePlayer++
+        }else if(keys.left.pressed){
+            sens = 0
+            nbImagePlayer++
+        }else{
+            nbImagePlayer=0
+        }
 
         //TODO mettre des variables au 400 et 100 ?
         if (keys.right.pressed && player.position.x < 400) {
@@ -325,7 +375,18 @@ addEventListener('DOMContentLoaded', () => {
         document.getElementById("intro").classList.add("endIntro")
     })   
     
+    function nbNiveauxFinis(){
+        let nb = 0
+        for(let i=0; i<niveauFini.length; i++){
+            if(niveauFini[i]) nb++
+        }
+        return nb
+    }
+
     function majContentMenu(){
+
+        let avanceBarre = parseInt(nbNiveauxFinis())+1
+        document.getElementsByClassName("dottedLine2")[0].style.width = "calc((13.75% + 15%)*"+avanceBarre+")"
 
         for(let i=0; i<nbNiveau; i++){
             elem = document.getElementsByClassName("lineLevels")[0].children[i]
@@ -358,7 +419,7 @@ addEventListener('DOMContentLoaded', () => {
 
         if(jeuFini()){
             paused = true
-            alert("Jeu fini, félicitation")
+            // alert("Jeu fini, félicitation")
         }
     }
     majContentMenu()
