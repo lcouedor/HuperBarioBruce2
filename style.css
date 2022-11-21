@@ -14,7 +14,7 @@ body{
 
 
 /* Intro du jeu */
-#intro{
+#intro, #outro{
     z-index: 99;
     font-size: 2rem;
     display: flex;
@@ -293,4 +293,15 @@ body{
 
 .levelFinished{
     border: 5px double gold !important;
+}
+
+#outro{
+    transform-origin: bottom left;
+    transform: rotate(-90deg);
+}
+
+.triggerOutro{
+    transform: rotate(0deg) !important;
+    transition: all 0.7s;
+    transition-delay: .5s;
 }

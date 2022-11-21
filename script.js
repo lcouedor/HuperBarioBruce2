@@ -112,8 +112,10 @@ addEventListener('DOMContentLoaded', () => {
     let currentLevel = null
     let niveauFini = []
     for(let i=0; i<nbNiveau; i++){
-        niveauFini[i] = false
+        niveauFini[i] = true
     }
+    niveauFini[2] = false
+    console.log(niveauFini)
 
 
     //gestion des appuis, même maintenus, sur les touches flèches gauche et droite
@@ -153,7 +155,7 @@ addEventListener('DOMContentLoaded', () => {
             new Platform(1000,750,3000,100, createImage("assets/img/lvl2/ground.png"))]
 
             genericOjects = [
-                new GenericObject (0, 0, createImage("assets/img/lvl1/background.png"), "background")]
+                new GenericObject (0, 0, createImage("assets/img/lvl2/background.png"), "background")]
     }
 
     function createLevel3(){
@@ -164,11 +166,11 @@ addEventListener('DOMContentLoaded', () => {
             new Platform(450,670,100,40,createImage("assets/img/lvl2/platform.png")), 
             new Platform(650,610,100,40,createImage("assets/img/lvl2/platform.png")),
             //le sol
-            new Platform(0,750,900,100, createImage("assets/img/lvl2/ground.png")),
-            new Platform(1000,750,3000,100, createImage("assets/img/lvl2/ground.png"))]
+            new Platform(0,750,900,100, createImage("assets/img/lvl3/ground_.png")),
+            new Platform(1000,750,3000,100, createImage("assets/img/lvl3/ground_.png"))]
 
             genericOjects = [
-                new GenericObject (0, 0, createImage("assets/img/lvl1/background.png"), "background")]
+                new GenericObject (0, 0, createImage("assets/img/lvl3/background.png"), "background")]
     }
 
     //initialisation des variables de l'environnement
@@ -420,6 +422,7 @@ addEventListener('DOMContentLoaded', () => {
         if(jeuFini()){
             paused = true
             // alert("Jeu fini, félicitation")
+            createOutro()
         }
     }
     majContentMenu()
@@ -483,4 +486,63 @@ addEventListener('DOMContentLoaded', () => {
     createIntro()
 
 
+    async function createOutro(){
+        //remise à init des valeurs en cas ou le bouton skip intro avait été pressé
+        delayText = 30
+        delayParagraphe = 400
+        delayEndText = 500
+
+        let elem = document.getElementById("outro")
+
+        elem.classList.add("triggerOutro")
+        let text = "Félicitation à toi jeune guerrier pour avoir récupéré le saint pitch"
+        letters = text.split("")
+        i=0
+        while(i<letters.length){
+            await waitForMs(delayText);
+            elem.children[0].innerHTML+=letters[i]
+            i++
+        }
+
+        await waitForMs(delayParagraphe);
+
+        text = "Non pas celle là !"
+        letters = text.split("")
+        i=0
+        while(i<letters.length){
+            await waitForMs(delayText);
+            elem.children[1].innerHTML+=letters[i]
+            i++
+        }
+
+        await waitForMs(delayParagraphe);
+
+        text = "Ah c'est mieux"
+        letters = text.split("")
+        i=0
+        while(i<letters.length){
+            await waitForMs(delayText);
+            elem.children[2].innerHTML+=letters[i]
+            i++
+        }
+
+        await waitForMs(delayParagraphe);
+
+        text = "Rendez-vous le 34 février 2042 pour la récupération du saint Candy-up volé par l'Abruce-T !"
+        letters = text.split("")
+        i=0
+        while(i<letters.length){
+            await waitForMs(delayText);
+            elem.children[3].innerHTML+=letters[i]
+            i++
+        }
+    }
+
 })
+
+
+// son in-game
+// https://www.youtube.com/watch?v=M9BoLuyFGx0
+// https://www.youtube.com/watch?v=bT7wlxCT5Es
+// https://www.youtube.com/watch?v=HU8fNigHTUs  //quand on perd nos vies
+// https://www.youtube.com/watch?v=VeFzYPKbz1g 
