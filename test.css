@@ -8,7 +8,7 @@
     overflow: hidden;
 }
 
-.taupe{
+#taupe{
     transform: scale(0);
     transition: transform .5s linear;
     width: 100%;

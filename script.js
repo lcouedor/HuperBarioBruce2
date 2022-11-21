@@ -6,13 +6,16 @@ addEventListener('DOMContentLoaded', () => {
     canvas.height = window.innerHeight
 
     const gravity = 1.5
-    const distToWin = 2000 //distance à parcourir avant de valider le niveau
+    const distToWin = 4000 //distance à parcourir avant de valider le niveau
     const tabImgPlayer = [[createImage("assets/img/mario/MarioStand0.png"), 
                             createImage("assets/img/mario/MarioRunLeft1.png"), 
                             createImage("assets/img/mario/MarioRunLeft1.png")],
                             [createImage("assets/img/mario/MarioStand1.png"), 
                             createImage("assets/img/mario/MarioRunRight1.png"), 
                             createImage("assets/img/mario/MarioRunRight2.png")]]
+    const tabImgBackground = [createImage("assets/img/lvl1/background.png"),
+                            createImage("assets/img/lvl2/background.png"),
+                            createImage("assets/img/lvl3/background.png")]
     let nbImagePlayer = 0
     let sens = 1 // 1 = droite | 0 = gauche
 
@@ -31,6 +34,7 @@ addEventListener('DOMContentLoaded', () => {
             this.height = 70
             this.jumpHeight = 20
             this.speed = 5
+            this.canMove = true
             
         }
     
@@ -90,7 +94,7 @@ addEventListener('DOMContentLoaded', () => {
                     c.drawImage(this.image, this.position.x+i*newWidth, this.position.y, this.width*ratio, this.height*ratio)
                 }
             }else{
-                c.drawImage(this.image, this.position.x, this.position.y, this.width, this.height)
+                c.drawImage(this.image, this.position.x, this.position.y, 100, 100)
             }
         }
     }
@@ -112,11 +116,8 @@ addEventListener('DOMContentLoaded', () => {
     let currentLevel = null
     let niveauFini = []
     for(let i=0; i<nbNiveau; i++){
-        niveauFini[i] = true
+        niveauFini[i] = false
     }
-    niveauFini[2] = false
-    console.log(niveauFini)
-
 
     //gestion des appuis, même maintenus, sur les touches flèches gauche et droite
     let keys = {
@@ -130,18 +131,34 @@ addEventListener('DOMContentLoaded', () => {
 
     function createLevel1(){
         platforms = [
-            //les tuyaux
+            new Platform(450,630,100,40,createImage("assets/img/lvl1/platform.png")),
             new Platform(600,700,50,80,createImage("assets/img/lvl1/platform.png")),
-            //les plateformes
-            new Platform(450,670,100,40,createImage("assets/img/lvl1/platform.png")), 
-            new Platform(650,610,100,40,createImage("assets/img/lvl1/platform.png")),
+            new Platform(650,580,100,40,createImage("assets/img/lvl1/platform.png")),
+            new Platform(1280,580,100,40,createImage("assets/img/lvl1/platform.png")),
+            new Platform(1150,720,50,40,createImage("assets/img/lvl1/platform.png")),
+            new Platform(1500,500,100,40,createImage("assets/img/lvl1/platform.png")),
+            new Platform(1500,500,100,40,createImage("assets/img/lvl1/platform.png")),
+            new Platform(1600,400,100,40,createImage("assets/img/lvl1/platform.png")),
+            new Platform(1700,300,100,40,createImage("assets/img/lvl1/platform.png")),
+            new Platform(1800,200,100,40,createImage("assets/img/lvl1/platform.png")),
+            new Platform(1900,100,500,40,createImage("assets/img/lvl1/platform.png")),
+            new Platform(3000,620,50,150,createImage("assets/img/lvl1/platform.png")),
+            new Platform(3130,490,50,50,createImage("assets/img/lvl1/platform.png")),
+            new Platform(3220,400,700,50,createImage("assets/img/lvl1/platform.png")),
+            new Platform(3920,400,30,500,createImage("assets/img/lvl1/platform.png")),
             //le sol
             new Platform(0,750,900,100, createImage("assets/img/lvl1/ground.png")),
-            new Platform(1000,750,3000,100, createImage("assets/img/lvl1/ground.png"))]
+            new Platform(1000,750,250,100, createImage("assets/img/lvl1/ground.png")),
+            new Platform(2670,750,3000,100, createImage("assets/img/lvl1/ground.png"))]
 
             genericOjects = [
-                new GenericObject (0, 0, createImage("assets/img/lvl1/background.png"), "background")]
+                new GenericObject (0, 0, tabImgBackground[0], "background"),
+                new GenericObject (distToWin, 800, createImage("assets/img/lvl1/platform.png"), "")]
     }
+
+    document.getElementsByTagName("body")[0].addEventListener("click", (e)=>{
+       console.log(e.pageX+scrollOffset,e.pageY)
+    })
 
     function createLevel2(){
         platforms = [
@@ -152,10 +169,10 @@ addEventListener('DOMContentLoaded', () => {
             new Platform(650,610,100,40,createImage("assets/img/lvl2/platform.png")),
             //le sol
             new Platform(0,750,900,100, createImage("assets/img/lvl2/ground.png")),
-            new Platform(1000,750,3000,100, createImage("assets/img/lvl2/ground.png"))]
+            new Platform(1000,750,30000,100, createImage("assets/img/lvl2/ground.png"))]
 
             genericOjects = [
-                new GenericObject (0, 0, createImage("assets/img/lvl2/background.png"), "background")]
+                new GenericObject (0, 0, tabImgBackground[1], "background")]
     }
 
     function createLevel3(){
@@ -167,10 +184,10 @@ addEventListener('DOMContentLoaded', () => {
             new Platform(650,610,100,40,createImage("assets/img/lvl2/platform.png")),
             //le sol
             new Platform(0,750,900,100, createImage("assets/img/lvl3/ground_.png")),
-            new Platform(1000,750,3000,100, createImage("assets/img/lvl3/ground_.png"))]
+            new Platform(1000,750,30000,100, createImage("assets/img/lvl3/ground_.png"))]
 
             genericOjects = [
-                new GenericObject (0, 0, createImage("assets/img/lvl3/background.png"), "background")]
+                new GenericObject (0, 0, tabImgBackground[2], "background")]
     }
 
     //initialisation des variables de l'environnement
@@ -190,8 +207,6 @@ addEventListener('DOMContentLoaded', () => {
             default: platforms = [new Platform(0,750,10000,100, createImage("assets/img/lvl2/ground.png"))]
         }
 
-        // console.log(genericOjects)
-
         scrollOffset = 0
         //résolution du bug qui maintenait l'avancement une fois respawn
         keys = {
@@ -209,6 +224,7 @@ addEventListener('DOMContentLoaded', () => {
         requestAnimationFrame(animate)
         c.clearRect(0,0,canvas.width,canvas.height)
 
+        //si le jeu n'est pas en cours (on est dans un menu, une animation, ...)
         if(paused) return
         
         genericOjects.forEach(genericOject => {
@@ -217,8 +233,10 @@ addEventListener('DOMContentLoaded', () => {
         platforms.forEach(platform => {
             platform.draw()
         })
+
         player.update()
 
+        //définition du sens du joueur pour choisir image affichée
         if(keys.right.pressed){
             sens = 1
             nbImagePlayer++
@@ -236,27 +254,32 @@ addEventListener('DOMContentLoaded', () => {
             player.velocity.x = -player.speed
         }else{
             player.velocity.x = 0
-            if (keys.right.pressed && scrollOffset+player.speed<=distToWin) {
-                scrollOffset+=player.speed
-                platforms.forEach(platform => {
-                    platform.position.x -= player.speed
-                })
-                genericOjects.forEach(genericOject => {
-                    genericOject.position.x -= player.speed/2
-                })
-            } else if (keys.left.pressed && scrollOffset-player.speed>=0) {
-                scrollOffset-=player.speed
-                platforms.forEach(platform => {
-                    platform.position.x += player.speed
-                })
-                genericOjects.forEach(genericOject => {
-                    genericOject.position.x += player.speed/2
-                })
+            if(player.canMove){
+                if (keys.right.pressed && scrollOffset+player.speed<=distToWin) {
+                    scrollOffset+=player.speed
+                    platforms.forEach(platform => {
+                        platform.position.x -= player.speed
+                    })
+                    genericOjects.forEach(genericOject => {
+                        genericOject.position.x -= player.speed/2
+                    })
+                } else if (keys.left.pressed && scrollOffset-player.speed>=0) {
+                    scrollOffset-=player.speed
+                    platforms.forEach(platform => {
+                        platform.position.x += player.speed
+                    })
+                    genericOjects.forEach(genericOject => {
+                        genericOject.position.x += player.speed/2
+                    })
+                }
+            }else{
+                player.canMove=true
             }
+            
         }
 
         // platform collision detection
-        //jump on platform
+        //jump on platform & gauche droite
         platforms.forEach(platform => {
             if (player.position.y + player.height <= platform.position.y &&
                 player.position.y + player.height + player.velocity.y >= platform.position.y && 
@@ -264,19 +287,23 @@ addEventListener('DOMContentLoaded', () => {
                 player.position.x <= platform.position.x + platform.width){
                     player.velocity.y = 0
             }
-        })
 
-        //gauche droite //TODO reste collé quand contact direct //TODO problème quand le background scroll des fois je passe à travers la plateforme
-        platforms.forEach(platform => {
-            if (player.position.x+player.width>=platform.position.x && 
+            if (player.position.x+player.width>=platform.position.x &&
                 player.position.x<=platform.position.x+platform.width &&
                 player.position.y+player.height>=platform.position.y &&
                 player.position.y<=platform.position.y+platform.height){
-                    player.velocity.x = 0
+                    player.canMove = false
+                    player.velocity.x = -1
+                    // if(keys.right.pressed){
+                    //     player.velocity.x = -1
+                    // }else if(keys.left.pressed){
+                    //     player.velocity.x = -1
+                    // }
             }
+
         })
 
-        if(scrollOffset>=distToWin){
+        if(scrollOffset>=distToWin){ //win
             paused = true
             niveauFini[currentLevel-1] = true
             document.getElementById("menu").style.transform = "translateY(0%)"
@@ -297,6 +324,8 @@ addEventListener('DOMContentLoaded', () => {
             majContentMenu()
         }
 
+        // console.log(player.canMove)
+
     }
 
     for(let i=0; i<nbNiveau; i++){
@@ -311,7 +340,6 @@ addEventListener('DOMContentLoaded', () => {
         init()
         paused = false
         document.getElementById("menu").style.transform = "translateY(-100%)"
-        
     }
 
     init()
