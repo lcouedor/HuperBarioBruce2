@@ -1,4 +1,27 @@
 addEventListener('DOMContentLoaded', () => {
+
+    //les pistes audio
+    let audios = {audioMort: new Audio('assets/sounds/no.mp3'),
+                    audioIntro: new Audio('assets/sounds/intro.mp3'),
+                    perdu: new Audio('assets/sounds/perdu.mp3'),
+                    no: new Audio('assets/sounds/no.mp3'),
+                    audioLvl1: new Audio('assets/sounds/lvl1.mp3'),
+                    audioLvl2: new Audio('assets/sounds/lvl2.mp3'),
+                    audioLvl3: new Audio('assets/sounds/lvl3.mp3')};
+     
+    audios["audioLvl1"].loop = true
+    audios["audioLvl2"].loop = true
+    audios["audioLvl3"].loop = true
+
+    //mettre en pause les longs audios (intro, outro, niveaux)
+    function stopLongSounds(){
+        audios["audioLvl1"].pause()
+        audios["audioLvl2"].pause()
+        audios["audioLvl3"].pause()
+    }
+
+    // console.log(audios)
+
     const canvas = document.querySelector('canvas')
     const c = canvas.getContext('2d')
 
@@ -119,6 +142,11 @@ addEventListener('DOMContentLoaded', () => {
         niveauFini[i] = false
     }
 
+    let inf = 999999999999
+    let timeToBeat = 25
+    let chrono;
+    let bestTime = [inf, inf, inf]
+
     //gestion des appuis, même maintenus, sur les touches flèches gauche et droite
     let keys = {
         right: {
@@ -197,15 +225,20 @@ addEventListener('DOMContentLoaded', () => {
         switch(currentLevel){
             case 1:
                 createLevel1()
+                audios["audioLvl1"].play()
                 break
             case 2:
                 createLevel2()
+                audios["audioLvl2"].play()
                 break
             case 3:
                 createLevel3()
+                audios["audioLvl3"].play()
                 break
             default: platforms = [new Platform(0,750,10000,100, createImage("assets/img/lvl2/ground.png"))]
         }
+
+        chrono = Date.now()
 
         scrollOffset = 0
         //résolution du bug qui maintenait l'avancement une fois respawn
@@ -294,27 +327,37 @@ addEventListener('DOMContentLoaded', () => {
                 player.position.y<=platform.position.y+platform.height){
                     player.canMove = false
                     player.velocity.x = -1
-                    // if(keys.right.pressed){
-                    //     player.velocity.x = -1
-                    // }else if(keys.left.pressed){
-                    //     player.velocity.x = -1
-                    // }
             }
 
         })
 
         if(scrollOffset>=distToWin){ //win
+            now = Date.now()
+            chrono = Math.round((now-chrono)/1000)
+            // console.log(currentLevel-1)
+            if(bestTime[currentLevel-1] > chrono){
+                bestTime[currentLevel-1] = chrono
+            }
+            console.log(bestTime)
+
             paused = true
             niveauFini[currentLevel-1] = true
             document.getElementById("menu").style.transform = "translateY(0%)"
             majContentMenu()
+
+            //arrêt des musiques
+            stopLongSounds()
+
         }
 
         if(player.position.y > canvas.height){ //mort
+            stopLongSounds()
             paused = true
             if(nbVies-1>0){
                 nbVies--
+                audios["no"].play()
             }else{
+                audios["perdu"].play()
                 nbVies = 3
                 for(let i=0; i<nbNiveau; i++){
                     niveauFini[i] = false
@@ -403,6 +446,8 @@ addEventListener('DOMContentLoaded', () => {
 
     document.getElementById("jouerBtn").addEventListener("click", ()=>{
         document.getElementById("intro").classList.add("endIntro")
+        audios["audioIntro"].play()
+        
     })   
     
     function nbNiveauxFinis(){
@@ -414,6 +459,19 @@ addEventListener('DOMContentLoaded', () => {
     }
 
     function majContentMenu(){
+        document.getElementsByClassName("fusion")[0].innerHTML=""
+        let div = document.createElement("div")
+        div.className = "timersLvl"
+        for(let i=0; i<bestTime.length; i++){
+            let text = document.createElement("div")
+            if(bestTime[i] != inf && niveauFini[i]){
+                text.innerHTML = bestTime[i]
+            }else{
+                text.innerHTML = "-"
+            }
+            div.appendChild(text)
+        }
+        document.getElementsByClassName("fusion")[0].appendChild(div)
 
         let avanceBarre = parseInt(nbNiveauxFinis())+1
         document.getElementsByClassName("dottedLine2")[0].style.width = "calc((13.75% + 15%)*"+avanceBarre+")"
@@ -461,6 +519,12 @@ addEventListener('DOMContentLoaded', () => {
                 return false
             }
         }
+
+        let somme = 0
+        for(let i=0; i<bestTime.length; i++){
+            somme+=bestTime[i]
+        }
+        if(!(somme<=timeToBeat)) return false
         return true
     }
 
@@ -498,6 +562,7 @@ addEventListener('DOMContentLoaded', () => {
             elem.children[2].innerHTML+=letters[i]
             i++
         }
+        audios["audioIntro"].pause()
 
         await waitForMs(delayEndText);
         document.getElementById("passText").style.display = "none"
@@ -569,8 +634,19 @@ addEventListener('DOMContentLoaded', () => {
 })
 
 
-// son in-game
-// https://www.youtube.com/watch?v=M9BoLuyFGx0
-// https://www.youtube.com/watch?v=bT7wlxCT5Es
-// https://www.youtube.com/watch?v=HU8fNigHTUs  //quand on perd nos vies
 // https://www.youtube.com/watch?v=VeFzYPKbz1g 
+
+/*
+    liste sounds : 
+        - type : https://www.youtube.com/watch?v=2BUNHd7ENZk
+        - message d'intro jouer : intro.mp3
+        - message d'intro pas jouer :
+        - lvl 1 : https://www.youtube.com/watch?v=M9BoLuyFGx0
+        - lvl 2 : https://www.youtube.com/watch?v=bT7wlxCT5Es
+        - lvl 3 : 
+        - menu : 
+        - quand on perd une vie : no.mp3
+        - quand on perd toutes nos vies : https://www.youtube.com/watch?v=HU8fNigHTUs
+        - quand on gagne :
+        - générique : https://www.youtube.com/watch?v=VeFzYPKbz1g
+*/
