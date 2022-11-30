@@ -20,8 +20,6 @@ addEventListener('DOMContentLoaded', () => {
         audios["audioLvl3"].pause()
     }
 
-    // console.log(audios)
-
     const canvas = document.querySelector('canvas')
     const c = canvas.getContext('2d')
 
@@ -36,9 +34,12 @@ addEventListener('DOMContentLoaded', () => {
                             [createImage("assets/img/mario/MarioStand1.png"), 
                             createImage("assets/img/mario/MarioRunRight1.png"), 
                             createImage("assets/img/mario/MarioRunRight2.png")]]
-    const tabImgBackground = [createImage("assets/img/lvl1/background.png"),
-                            createImage("assets/img/lvl2/background.png"),
-                            createImage("assets/img/lvl3/background.png")]
+    // const tabImgBackground = [createImage("assets/img/lvl1/background.png"),
+    //                         createImage("assets/img/lvl2/background.png"),
+    //                         createImage("assets/img/lvl3/background.png")]
+    const imgChateau = createImage("assets/img/chateau.png")
+    const imgBg = createImage("assets/img/bg.jpeg")
+
     let nbImagePlayer = 0
     let sens = 1 // 1 = droite | 0 = gauche
 
@@ -78,7 +79,7 @@ addEventListener('DOMContentLoaded', () => {
 
     //décalration des attributs des plateformes, utilisées comme plateformes, tuyau, ou sol
     class Platform {
-        constructor(x,y,width,height,image) {
+        constructor(x,y,width,height,image, type) {
             this.position = {
                 x,
                 y
@@ -86,12 +87,29 @@ addEventListener('DOMContentLoaded', () => {
             this.width = width
             this.height = height
             this.image = image
+            this.type = type
         }
 
+
         draw() {
-            // c.fillStyle = this.color
-            // c.fillRect(this.position.x, this.position.y, this.width, this.height)
-            c.drawImage(this.image, this.position.x, this.position.y, this.width, this.height)
+            let nbToRepeat = this.width/this.image.width
+            let nbToRepeatInt = Math.floor(this.width/this.image.width)
+            let resteToRepeat = nbToRepeat-nbToRepeatInt
+            let nbMaxRepeat = 50
+            if(this.type == "sol" && nbToRepeatInt<nbMaxRepeat){
+                if(nbToRepeatInt>0){
+                    for(let i=0; i<nbToRepeatInt; i++){
+                        c.drawImage(this.image, this.position.x+i*this.image.width, this.position.y, this.image.width, this.height)
+                    }
+                    c.drawImage(this.image, this.position.x+nbToRepeatInt*this.image.width, this.position.y, this.image.width*resteToRepeat, this.height)
+                }else{
+                    c.drawImage(this.image, this.position.x, this.position.y, this.width, this.height)
+                }
+            }else if(this.type == "lakitupa"){
+                c.drawImage(this.image, this.position.x, this.position.y, this.image.width/10, this.image.height/10)
+            }else{
+                c.drawImage(this.image, this.position.x, this.position.y, this.width, this.height)
+            }
         }
     }
 
@@ -116,8 +134,8 @@ addEventListener('DOMContentLoaded', () => {
                 for(let i=0; i<Math.ceil(distToWin/newWidth); i++){
                     c.drawImage(this.image, this.position.x+i*newWidth, this.position.y, this.width*ratio, this.height*ratio)
                 }
-            }else{
-                c.drawImage(this.image, this.position.x, this.position.y, 100, 100)
+            }else if(this.type == "chateau"){
+                c.drawImage(this.image, this.position.x-this.width/2+25, this.height, this.width, this.height)
             }
         }
     }
@@ -141,11 +159,15 @@ addEventListener('DOMContentLoaded', () => {
     for(let i=0; i<nbNiveau; i++){
         niveauFini[i] = false
     }
-
     let inf = 999999999999
     let timeToBeat = 25
     let chrono;
-    let bestTime = [inf, inf, inf]
+    let bestTime = new Array(nbNiveau)
+    for(let i=0; i<nbNiveau; i++){
+        bestTime[i] = inf
+    }
+    let offsetPlayerRight = 400
+    let offsetPlayerLeft = 100
 
     //gestion des appuis, même maintenus, sur les touches flèches gauche et droite
     let keys = {
@@ -159,29 +181,31 @@ addEventListener('DOMContentLoaded', () => {
 
     function createLevel1(){
         platforms = [
-            new Platform(450,630,100,40,createImage("assets/img/lvl1/platform.png")),
-            new Platform(600,700,50,80,createImage("assets/img/lvl1/platform.png")),
-            new Platform(650,580,100,40,createImage("assets/img/lvl1/platform.png")),
-            new Platform(1280,580,100,40,createImage("assets/img/lvl1/platform.png")),
-            new Platform(1150,720,50,40,createImage("assets/img/lvl1/platform.png")),
-            new Platform(1500,500,100,40,createImage("assets/img/lvl1/platform.png")),
-            new Platform(1500,500,100,40,createImage("assets/img/lvl1/platform.png")),
-            new Platform(1600,400,100,40,createImage("assets/img/lvl1/platform.png")),
-            new Platform(1700,300,100,40,createImage("assets/img/lvl1/platform.png")),
-            new Platform(1800,200,100,40,createImage("assets/img/lvl1/platform.png")),
-            new Platform(1900,100,500,40,createImage("assets/img/lvl1/platform.png")),
-            new Platform(3000,620,50,150,createImage("assets/img/lvl1/platform.png")),
-            new Platform(3130,490,50,50,createImage("assets/img/lvl1/platform.png")),
-            new Platform(3220,400,700,50,createImage("assets/img/lvl1/platform.png")),
-            new Platform(3920,400,30,500,createImage("assets/img/lvl1/platform.png")),
+            new Platform(450,630,100,40,createImage("assets/img/platform.png")),
+            new Platform(600,700,50,80,createImage("assets/img/platform.png")),
+            new Platform(650,580,100,40,createImage("assets/img/platform.png")),
+            new Platform(1280,580,100,40,createImage("assets/img/platform.png")),
+            new Platform(1150,720,50,40,createImage("assets/img/platform.png")),
+            new Platform(1500,500,100,40,createImage("assets/img/platform.png")),
+            new Platform(1500,500,100,40,createImage("assets/img/platform.png")),
+            new Platform(1600,400,100,40,createImage("assets/img/platform.png")),
+            new Platform(1700,300,100,40,createImage("assets/img/platform.png")),
+            new Platform(1800,200,100,40,createImage("assets/img/platform.png")),
+            new Platform(1900,100,500,40,createImage("assets/img/platform.png")),
+            new Platform(3000,620,50,150,createImage("assets/img/platform.png")),
+            new Platform(3130,490,50,50,createImage("assets/img/platform.png")),
+            new Platform(3220,400,700,50,createImage("assets/img/platform.png")),
+            new Platform(3920,400,30,500,createImage("assets/img/platform.png")),
             //le sol
-            new Platform(0,750,900,100, createImage("assets/img/lvl1/ground.png")),
-            new Platform(1000,750,250,100, createImage("assets/img/lvl1/ground.png")),
-            new Platform(2670,750,3000,100, createImage("assets/img/lvl1/ground.png"))]
+            new Platform(0,750,900,100, createImage("assets/img/grass.png"), "sol"),
+            new Platform(1000,750,250,100, createImage("assets/img/grass.png"), "sol"),
+            new Platform(2670,750,3000,100, createImage("assets/img/grass.png"), "sol"),
+            //les lakipuas
+            new Platform(500,680,100,40,createImage("assets/img/lakitupa/lakitupaStandingLeft.png"), "lakitupa")]
 
             genericOjects = [
-                new GenericObject (0, 0, tabImgBackground[0], "background"),
-                new GenericObject (distToWin, 800, createImage("assets/img/lvl1/platform.png"), "")]
+                new GenericObject (0, 0, imgBg, "background"),
+                new GenericObject (distToWin+offsetPlayerRight, 0, imgChateau, "chateau")]
     }
 
     document.getElementsByTagName("body")[0].addEventListener("click", (e)=>{
@@ -191,31 +215,33 @@ addEventListener('DOMContentLoaded', () => {
     function createLevel2(){
         platforms = [
             //les tuyaux
-            new Platform(600,700,50,80,createImage("assets/img/lvl2/platform.png")),
+            new Platform(600,700,50,80,createImage("assets/img/platform.png")),
             //les plateformes
-            new Platform(450,670,100,40,createImage("assets/img/lvl2/platform.png")), 
-            new Platform(650,610,100,40,createImage("assets/img/lvl2/platform.png")),
+            new Platform(450,670,100,40,createImage("assets/img/platform.png")), 
+            new Platform(650,610,100,40,createImage("assets/img/platform.png")),
             //le sol
-            new Platform(0,750,900,100, createImage("assets/img/lvl2/ground.png")),
-            new Platform(1000,750,30000,100, createImage("assets/img/lvl2/ground.png"))]
+            new Platform(0,750,900,100, createImage("assets/img/grass.png")),
+            new Platform(1000,750,30000,100, createImage("assets/img/grass.png"))]
 
             genericOjects = [
-                new GenericObject (0, 0, tabImgBackground[1], "background")]
+                new GenericObject (0, 0, imgBg, "background"),
+                new GenericObject (distToWin+offsetPlayerRight, 0, imgChateau, "chateau")]
     }
 
     function createLevel3(){
         platforms = [
             //les tuyaux
-            new Platform(600,700,50,80,createImage("assets/img/lvl2/platform.png")),
+            new Platform(600,700,50,80,createImage("assets/img/platform.png")),
             //les plateformes
-            new Platform(450,670,100,40,createImage("assets/img/lvl2/platform.png")), 
-            new Platform(650,610,100,40,createImage("assets/img/lvl2/platform.png")),
+            new Platform(450,670,100,40,createImage("assets/img/platform.png")), 
+            new Platform(650,610,100,40,createImage("assets/img/platform.png")),
             //le sol
-            new Platform(0,750,900,100, createImage("assets/img/lvl3/ground_.png")),
-            new Platform(1000,750,30000,100, createImage("assets/img/lvl3/ground_.png"))]
+            new Platform(0,750,900,100, createImage("assets/img/grass.png")),
+            new Platform(1000,750,30000,100, createImage("assets/img/grass.png"))]
 
             genericOjects = [
-                new GenericObject (0, 0, tabImgBackground[2], "background")]
+                new GenericObject (0, 0, imgBg, "background"),
+                new GenericObject (distToWin+offsetPlayerRight, 0, imgChateau, "chateau")]
     }
 
     //initialisation des variables de l'environnement
@@ -225,17 +251,17 @@ addEventListener('DOMContentLoaded', () => {
         switch(currentLevel){
             case 1:
                 createLevel1()
-                audios["audioLvl1"].play()
+                // audios["audioLvl1"].play()
                 break
             case 2:
                 createLevel2()
-                audios["audioLvl2"].play()
+                // audios["audioLvl2"].play()
                 break
             case 3:
                 createLevel3()
-                audios["audioLvl3"].play()
+                // audios["audioLvl3"].play()
                 break
-            default: platforms = [new Platform(0,750,10000,100, createImage("assets/img/lvl2/ground.png"))]
+            default: platforms = [new Platform(0,750,10000,100, createImage("assets/img/grass.png"))]
         }
 
         chrono = Date.now()
@@ -280,10 +306,9 @@ addEventListener('DOMContentLoaded', () => {
             nbImagePlayer=0
         }
 
-        //TODO mettre des variables au 400 et 100 ?
-        if (keys.right.pressed && player.position.x < 400) {
+        if (keys.right.pressed && player.position.x < offsetPlayerRight) {
             player.velocity.x = player.speed
-        } else if (keys.left.pressed && player.position.x > 100) {
+        } else if (keys.left.pressed && player.position.x > offsetPlayerLeft) {
             player.velocity.x = -player.speed
         }else{
             player.velocity.x = 0
@@ -294,7 +319,11 @@ addEventListener('DOMContentLoaded', () => {
                         platform.position.x -= player.speed
                     })
                     genericOjects.forEach(genericOject => {
-                        genericOject.position.x -= player.speed/2
+                        if(genericOject.type == "background"){
+                            genericOject.position.x -= player.speed/2
+                        }else{
+                            genericOject.position.x -= player.speed
+                        }                        
                     })
                 } else if (keys.left.pressed && scrollOffset-player.speed>=0) {
                     scrollOffset-=player.speed
@@ -302,7 +331,11 @@ addEventListener('DOMContentLoaded', () => {
                         platform.position.x += player.speed
                     })
                     genericOjects.forEach(genericOject => {
-                        genericOject.position.x += player.speed/2
+                        if(genericOject.type == "background"){
+                            genericOject.position.x += player.speed/2
+                        }else{
+                            genericOject.position.x += player.speed
+                        } 
                     })
                 }
             }else{
@@ -334,11 +367,9 @@ addEventListener('DOMContentLoaded', () => {
         if(scrollOffset>=distToWin){ //win
             now = Date.now()
             chrono = Math.round((now-chrono)/1000)
-            // console.log(currentLevel-1)
             if(bestTime[currentLevel-1] > chrono){
                 bestTime[currentLevel-1] = chrono
             }
-            console.log(bestTime)
 
             paused = true
             niveauFini[currentLevel-1] = true
@@ -355,19 +386,18 @@ addEventListener('DOMContentLoaded', () => {
             paused = true
             if(nbVies-1>0){
                 nbVies--
-                audios["no"].play()
+                // audios["no"].play()
             }else{
-                audios["perdu"].play()
+                // audios["perdu"].play()
                 nbVies = 3
                 for(let i=0; i<nbNiveau; i++){
                     niveauFini[i] = false
                 }
+                createModale("Bouhhhhh, il est nullllll ! Recommence. Vite. Bario a faim.", document.getElementById("menu"))
             }
             document.getElementById("menu").style.transform = "translateY(0%)"
             majContentMenu()
         }
-
-        // console.log(player.canMove)
 
     }
 
@@ -446,9 +476,38 @@ addEventListener('DOMContentLoaded', () => {
 
     document.getElementById("jouerBtn").addEventListener("click", ()=>{
         document.getElementById("intro").classList.add("endIntro")
-        audios["audioIntro"].play()
-        
+        // audios["audioIntro"].play()
     })   
+
+    document.getElementsByClassName("mysteryBox")[0].addEventListener("click", ()=>{
+        createModale("test",document.getElementById("menu"), "peach")
+    })
+
+    function createModale(texte, ajout, type){
+        let div = document.createElement("div")
+        div.className = "modale"
+        if(type == "peach"){
+            div.style.backgroundImage = "url(assets/img/peachColored.png)"
+        }else{
+            div.innerHTML = texte
+        }
+        
+        let voile = document.createElement("div")
+        voile.className = "voile"
+
+        ajout.appendChild(div)
+        ajout.appendChild(voile)
+
+        div.addEventListener("click", ()=>{
+            div.remove()
+            voile.remove()
+        })
+
+        voile.addEventListener("click", ()=>{
+            div.remove()
+            voile.remove()
+        })
+    }
     
     function nbNiveauxFinis(){
         let nb = 0
@@ -459,22 +518,30 @@ addEventListener('DOMContentLoaded', () => {
     }
 
     function majContentMenu(){
-        document.getElementsByClassName("fusion")[0].innerHTML=""
-        let div = document.createElement("div")
-        div.className = "timersLvl"
+        let majTemps = document.getElementsByClassName("tempsEcoule")[0]
+        let sum = 0
+        for(t of bestTime){
+            if(t != inf) sum+=t
+        }
+        majTemps.innerHTML = sum+"/"+timeToBeat+"s"
+
+        let div = document.getElementsByClassName("timersLvl")[0]
+        div.innerHTML=""
+        
         for(let i=0; i<bestTime.length; i++){
             let text = document.createElement("div")
+            text.className = "time-"+i
+            text.style.width = "calc(100% / "+bestTime.length+")"
             if(bestTime[i] != inf && niveauFini[i]){
-                text.innerHTML = bestTime[i]
+                text.innerHTML = bestTime[i]+"s"
             }else{
                 text.innerHTML = "-"
             }
             div.appendChild(text)
         }
-        document.getElementsByClassName("fusion")[0].appendChild(div)
 
         let avanceBarre = parseInt(nbNiveauxFinis())+1
-        document.getElementsByClassName("dottedLine2")[0].style.width = "calc((13.75% + 15%)*"+avanceBarre+")"
+        document.getElementsByClassName("dottedLine2")[0].style.width = "calc((13.75vw + 15vw)*"+avanceBarre+")"
 
         for(let i=0; i<nbNiveau; i++){
             elem = document.getElementsByClassName("lineLevels")[0].children[i]
@@ -554,7 +621,7 @@ addEventListener('DOMContentLoaded', () => {
 
         await waitForMs(delayParagraphe);
 
-        let text3 = "Aide Bario à fouiller les manoirs de Bruce, mais fais attention aux Lakitupas qui surveillent le jardin, et aux pièges collants !"
+        let text3 = "Aide Bario à fouiller les manoirs de Bruce, mais fais attention aux Lakitupas qui surveillent le jardin, et aux pièges collants ! Tu as "+timeToBeat+"s pour finir avant que Bruce ne mange ton goûter, bonne chance !"
         letters = text3.split("")
         i=0
         while(i<letters.length){

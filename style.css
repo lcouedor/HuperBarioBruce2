@@ -206,6 +206,66 @@ body{
     transition: all 0.2s;
 }
 
+.mysteryBox{
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    left: 20%;
+    bottom: 30%;
+}
+
+.show{
+    width: 50px;
+    height: 40px;
+    position: absolute;
+    left: 20%;
+    bottom: 40%;
+    display: flex;
+    flex-direction: column;
+}
+
+.arrow1, .arrow2, .arrow3{
+    position: relative;
+    width: 100%;
+    height: calc(100% / 3);
+}
+
+.show .arrow1 div, .show .arrow2 div, .show .arrow3 div{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 70%;
+    height: 3px;
+    animation: arrow 0.6s infinite;
+    background-color: black;
+}
+
+.show .arrow2 div{
+    animation-delay: 0.2s;
+}
+
+.show .arrow3 div{
+    animation-delay: 0.4s;
+}
+
+@keyframes arrow {
+    0% {
+        background-color: black;
+    }
+    100%{
+        background-color: plum;
+    }
+}
+
+.show .arrow1 div:nth-child(1), .show .arrow2 div:nth-child(1), .show .arrow3 div:nth-child(1){
+    transform: rotate(45deg);
+}
+
+.show .arrow1 div:nth-child(2), .show .arrow2 div:nth-child(2), .show .arrow3 div:nth-child(2){
+    left: 50%;
+    transform: rotate(-45deg);
+}
+
 .barreMenu{
     display: flex;
     align-items: center;
@@ -213,11 +273,12 @@ body{
     width: 100%;
     background-color: black;
     height: 15vh;
+    position: relative;
 }
 
 .fusion{
     background: rgb(2,0,36);
-    background: linear-gradient(180deg, rgba(2,0,36,1) 0%, rgba(92,197,255,1) 100%);
+    background: linear-gradient(180deg, rgba(2,0,36,1) 0%, rgba(37,156,254) 100%);
     position: absolute;
     left: 0;
     top: 12.5%;
@@ -246,21 +307,47 @@ body{
     margin: 1vh;
 }
 
+.tempsEcoule{
+    font-size: 3.5rem;
+    color: white;
+    font-family: marioFont;
+    position: absolute;
+    top: 0;
+    right: 5%;
+    height: 100%;
+    width: 10vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+
 /* Boutons lancement de niveau */
 .lineLevels{
-    height: 35vh;
+    margin-top: 10vh;
+    height: 25vh;
     width: 100%;
-    background-color: #5cc5ff;
+    /* background-color: #5cc5ff; */
     display: flex;
     align-items: center;
     justify-content: space-evenly;
 }
 
 .timersLvl{
+    position: absolute;
+    width: 100%;
+    height: 5vh;
+    left: 0;
+    top: 17.5%;
+    display: flex;
+}
+
+div[class*='time-']{
     display: flex;
     align-items: center;
-    justify-content: space-evenly;
-    background-color: red;
+    justify-content: center;
+    font-family: marioFont;
+    font-size: 3rem;
 }
 
 .dottedLine{
@@ -283,7 +370,7 @@ body{
     justify-content: center;
     z-index: 20;
     font-family: marioFont;
-    box-shadow: inset 50px 50px 500px plum;
+    box-shadow: inset 0px 0px 70px plum;
     font-size: 10rem;
     border: 5px solid black;
     width: 15vw;
@@ -295,19 +382,14 @@ body{
     background-repeat: no-repeat;
 }
 
-/* .lineLevels button:not([disabled]){
-    box-shadow: 0px 0px 150px gold;
-    box-shadow: inset none;
-} */
-
 .lineLevels button:nth-child(1){
-    background-image: url(assets/img/lvl1/logo.png);
+    background-image: url(assets/img/logolvl1.png);
 }
 .lineLevels button:nth-child(2){
-    background-image: url(assets/img/lvl2/logo.png);
+    background-image: url(assets/img/logolvl2.png);
 }
 .lineLevels button:nth-child(3){
-    background-image: url(assets/img/lvl3/logo.png);
+    background-image: url(assets/img/logolvl3.png);
 }
 
 .levelFinished{
@@ -324,3 +406,32 @@ body{
     transition: all 0.7s;
     transition-delay: .5s;
 }
+
+.voile{
+    z-index: 100;
+    background-color: #C0C0C0;
+    opacity: 0.9;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+}
+
+.modale{
+    z-index: 101;
+    width: 50%;
+    height: 50%;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    display: table-cell;
+    text-align: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    font-family: marioFont;
+    font-size: 3rem;
+}
+
