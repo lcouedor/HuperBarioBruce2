@@ -435,3 +435,17 @@ div[class*='time-']{
     font-size: 3rem;
 }
 
+.question{
+    cursor: pointer;
+    margin-left: 5vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-family: marioFont;
+    font-size: 3rem;
+    height: 5vh;
+    width: 5vh;
+    border: 1px solid white;
+    border-radius: 50px;
+}

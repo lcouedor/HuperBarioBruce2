@@ -34,37 +34,80 @@ addEventListener('DOMContentLoaded', () => {
                             [createImage("assets/img/mario/MarioStand1.png"), 
                             createImage("assets/img/mario/MarioRunRight1.png"), 
                             createImage("assets/img/mario/MarioRunRight2.png")]]
-    // const tabImgBackground = [createImage("assets/img/lvl1/background.png"),
-    //                         createImage("assets/img/lvl2/background.png"),
-    //                         createImage("assets/img/lvl3/background.png")]
+
+    const tabImageLakitupa = [[createImage("assets/img/lakitupa/lakitupaStandingLeft.png"), 
+                            createImage("assets/img/lakitupa/lakitupaMoveLeft.png"), 
+                            createImage("assets/img/lakitupa/lakitupaMoveLeft1.png")],
+                            [createImage("assets/img/lakitupa/lakitupaStandingRight.png"), 
+                            createImage("assets/img/lakitupa/lakitupaMoveRight.png"), 
+                            createImage("assets/img/lakitupa/lakitupaMoveRight1.png")]]
+
     const imgChateau = createImage("assets/img/chateau.png")
     const imgBg = createImage("assets/img/bg.jpeg")
 
     let nbImagePlayer = 0
     let sens = 1 // 1 = droite | 0 = gauche
 
+    function randomNumberBetween(min, max) {
+        return Math.random() * (max - min) + min
+    }
+
     //déclaration des attributs du joueur
     class Player{
-        constructor(){
+        constructor(x, y, type, minLakitupa, maxLakitupa){
             this.position = {
-                x : 100,
-                y : 100
+                x : x,
+                y : y
             }
             this.velocity = {
                 x : 0,
                 y : 10
             }
-            this.width = 50
-            this.height = 70
-            this.jumpHeight = 20
-            this.speed = 5
-            this.canMove = true
             
+            this.jumpHeight = 20
+            if(type == "lakitupa"){
+                this.speed = randomNumberBetween(0.1,0.6)
+            }else(
+                this.speed = 5
+            )
+
+            this.canMove = true
+            this.isDead = false //true en cas de contact latéral avec un autre player
+
+            this.minX = x-minLakitupa
+            this.maxX = x+maxLakitupa
+
+            if(type == "lakitupa"){
+                this.image = tabImageLakitupa[0][0]
+                this.width = this.image.width/10
+                this.height = this.image.height/10
+            }else{
+                this.image = null
+                this.width = 50
+                this.height = 70
+            }
+
+            this.type = type
+            this.sens = Math.round(Math.random())
+            this.nbImageLakitupa = 0
+            this.nbConsecImage = 0
+            this.nbBeforeChange = Math.round((10,15))
+
         }
     
         draw(){
-            // c.drawImage(tabImgPlayer[sens][nbImagePlayer%tabImgPlayer.length], this.position.x, this.position.y, this.width, this.height)
-            c.drawImage(tabImgPlayer[sens][nbImagePlayer%tabImgPlayer[0].length], this.position.x, this.position.y, this.width, this.height)
+            if(this.type == "lakitupa"){
+                this.nbConsecImage = (this.nbConsecImage+1)%this.nbBeforeChange
+                if(this.nbConsecImage == this.nbBeforeChange-1){
+                    this.nbImageLakitupa = (this.nbImageLakitupa+1)%tabImageLakitupa[0].length
+                }
+
+                this.image = tabImageLakitupa[this.sens][this.nbImageLakitupa]
+                c.drawImage(this.image, this.position.x, this.position.y, this.width, this.height)
+            }else{
+                c.drawImage(tabImgPlayer[sens][nbImagePlayer%tabImgPlayer[0].length], this.position.x, this.position.y, this.width, this.height)
+            }
+            
         }
 
         update(){
@@ -105,8 +148,6 @@ addEventListener('DOMContentLoaded', () => {
                 }else{
                     c.drawImage(this.image, this.position.x, this.position.y, this.width, this.height)
                 }
-            }else if(this.type == "lakitupa"){
-                c.drawImage(this.image, this.position.x, this.position.y, this.image.width/10, this.image.height/10)
             }else{
                 c.drawImage(this.image, this.position.x, this.position.y, this.width, this.height)
             }
@@ -141,14 +182,15 @@ addEventListener('DOMContentLoaded', () => {
     }
 
     function createImage (imageSrc) {
-        const image = new Image ()
+        const image = new Image()
         image.src = imageSrc
         return image
     }
 
     //variables globales nécessaires au programmes, remplies dans la fonction init()
-    let player = new Player()
+    let player
     let platforms = []
+    let lakitupas = []
     let genericOjects = []
     let scrollOffset = 0
     let paused = true
@@ -199,18 +241,17 @@ addEventListener('DOMContentLoaded', () => {
             //le sol
             new Platform(0,750,900,100, createImage("assets/img/grass.png"), "sol"),
             new Platform(1000,750,250,100, createImage("assets/img/grass.png"), "sol"),
-            new Platform(2670,750,3000,100, createImage("assets/img/grass.png"), "sol"),
-            //les lakipuas
-            new Platform(500,680,100,40,createImage("assets/img/lakitupa/lakitupaStandingLeft.png"), "lakitupa")]
+            new Platform(2670,750,3000,100, createImage("assets/img/grass.png"), "sol")]
 
-            genericOjects = [
-                new GenericObject (0, 0, imgBg, "background"),
-                new GenericObject (distToWin+offsetPlayerRight, 0, imgChateau, "chateau")]
+        genericOjects = [
+            new GenericObject (0, 0, imgBg, "background"),
+            new GenericObject (distToWin+offsetPlayerRight, 0, imgChateau, "chateau")]
+
+        lakitupas = [
+            new Player(300,100,"lakitupa", 50, 300),
+            // new Player(400,100,"lakitupa")
+        ]
     }
-
-    document.getElementsByTagName("body")[0].addEventListener("click", (e)=>{
-       console.log(e.pageX+scrollOffset,e.pageY)
-    })
 
     function createLevel2(){
         platforms = [
@@ -244,9 +285,13 @@ addEventListener('DOMContentLoaded', () => {
                 new GenericObject (distToWin+offsetPlayerRight, 0, imgChateau, "chateau")]
     }
 
+    document.getElementsByTagName("body")[0].addEventListener("click", (e)=>{
+        console.log(e.pageX+scrollOffset,e.pageY)
+    })
+
     //initialisation des variables de l'environnement
     function init(){
-        player = new Player()
+        player = new Player(100,100)
 
         switch(currentLevel){
             case 1:
@@ -267,7 +312,6 @@ addEventListener('DOMContentLoaded', () => {
         chrono = Date.now()
 
         scrollOffset = 0
-        //résolution du bug qui maintenait l'avancement une fois respawn
         keys = {
             right: {
                 pressed: false
@@ -292,7 +336,10 @@ addEventListener('DOMContentLoaded', () => {
         platforms.forEach(platform => {
             platform.draw()
         })
-
+        lakitupas.forEach(lakitupa => {
+            lakitupa.update()
+        })
+        
         player.update()
 
         //définition du sens du joueur pour choisir image affichée
@@ -318,6 +365,9 @@ addEventListener('DOMContentLoaded', () => {
                     platforms.forEach(platform => {
                         platform.position.x -= player.speed
                     })
+                    lakitupas.forEach(lakitupa => {
+                        lakitupa.position.x-=player.speed
+                    })
                     genericOjects.forEach(genericOject => {
                         if(genericOject.type == "background"){
                             genericOject.position.x -= player.speed/2
@@ -329,6 +379,9 @@ addEventListener('DOMContentLoaded', () => {
                     scrollOffset-=player.speed
                     platforms.forEach(platform => {
                         platform.position.x += player.speed
+                    })
+                    lakitupas.forEach(lakitupa => {
+                        lakitupa.position.x+=player.speed
                     })
                     genericOjects.forEach(genericOject => {
                         if(genericOject.type == "background"){
@@ -362,6 +415,62 @@ addEventListener('DOMContentLoaded', () => {
                     player.velocity.x = -1
             }
 
+            //-----------
+            lakitupas.forEach(lakitupa => {
+                if (lakitupa.position.y + lakitupa.height <= platform.position.y &&
+                    lakitupa.position.y + lakitupa.height + lakitupa.velocity.y >= platform.position.y && 
+                    lakitupa.position.x + lakitupa.width >= platform.position.x &&
+                    lakitupa.position.x <= platform.position.x + platform.width){
+                        lakitupa.velocity.y = 0
+                }
+    
+                if (lakitupa.position.x+lakitupa.width>=platform.position.x &&
+                    lakitupa.position.x<=platform.position.x+platform.width &&
+                    lakitupa.position.y+lakitupa.height>=platform.position.y &&
+                    lakitupa.position.y<=platform.position.y+platform.height){
+                        lakitupa.canMove = false
+                        lakitupa.velocity.x = 0
+                        lakitupa.sens = (lakitupa.sens == 0) ? 1 : 0
+                }
+            })
+            //-----------
+        })
+
+        //la mort avec le contact des lakitupas
+        lakitupas.forEach(lakitupa => {
+            //si il va à gauche et qu'il n'a pas atteint sa bordure : il continue
+            if(lakitupa.sens == 0 && lakitupa.position.x+scrollOffset-lakitupa.speed>lakitupa.minX){
+                lakitupa.velocity.x=-lakitupa.speed
+            //si il va à droite et qu'il n'a pas atteint sa bordure : il continue
+            }else if(lakitupa.sens == 1 && lakitupa.position.x+scrollOffset+lakitupa.speed<lakitupa.maxX){
+                lakitupa.velocity.x=lakitupa.speed
+            }else{
+                lakitupa.velocity.x = 0
+                lakitupa.sens = (lakitupa.sens == 0) ? 1 : 0 //changement de sens du lakitupa
+            }
+
+            //on est sur un lakitupa, aucun problème
+            if (player.position.y + player.height <= lakitupa.position.y &&
+                player.position.y + player.height + player.velocity.y >= lakitupa.position.y && 
+                player.position.x + player.width >= lakitupa.position.x &&
+                player.position.x <= lakitupa.position.x + lakitupa.width){
+                    player.velocity.y = 0
+
+                    lakitupa.sens = (lakitupa.sens == 0) ? 1 : 0
+                    let rdNumber = Math.round(randomNumberBetween(-1,1))
+
+                    if(rdNumber == -1) lakitupa.position.x -= 5
+                    else if(rdNumber == 1) lakitupa.position.x += 5
+            }
+
+            //on arrive sur les côtés d'un lakitupa, on meurt
+            if (player.position.x+player.width>=lakitupa.position.x &&
+                player.position.x<=lakitupa.position.x+lakitupa.width &&
+                player.position.y+player.height>=lakitupa.position.y &&
+                player.position.y<=lakitupa.position.y+lakitupa.height){
+                    player.isDead = true
+                    player.velocity.x = 0
+            }
         })
 
         if(scrollOffset>=distToWin){ //win
@@ -381,7 +490,7 @@ addEventListener('DOMContentLoaded', () => {
 
         }
 
-        if(player.position.y > canvas.height){ //mort
+        if(player.position.y > canvas.height || player.isDead){ //mort
             stopLongSounds()
             paused = true
             if(nbVies-1>0){
@@ -481,6 +590,11 @@ addEventListener('DOMContentLoaded', () => {
 
     document.getElementsByClassName("mysteryBox")[0].addEventListener("click", ()=>{
         createModale("test",document.getElementById("menu"), "peach")
+    })
+
+    document.getElementById("question").addEventListener("click", ()=>{
+        //TODO faire la modale avec tout le contenu nécessaire
+        createModale("Y a dé choz à fére é tou",document.getElementById("menu"))
     })
 
     function createModale(texte, ajout, type){
