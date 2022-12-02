@@ -48,6 +48,7 @@ addEventListener('DOMContentLoaded', () => {
     let nbImagePlayer = 0
     let sens = 1 // 1 = droite | 0 = gauche
 
+    //un nombre float aléatoire entre 2 bornes 
     function randomNumberBetween(min, max) {
         return Math.random() * (max - min) + min
     }
@@ -65,33 +66,32 @@ addEventListener('DOMContentLoaded', () => {
             }
             
             this.jumpHeight = 20
+            //lakitupa défini comme un joueur pour profiter de la gravité
             if(type == "lakitupa"){
                 this.speed = randomNumberBetween(0.1,0.6)
-            }else(
-                this.speed = 5
-            )
-
-            this.canMove = true
-            this.isDead = false //true en cas de contact latéral avec un autre player
-
-            this.minX = x-minLakitupa
-            this.maxX = x+maxLakitupa
-
-            if(type == "lakitupa"){
                 this.image = tabImageLakitupa[0][0]
                 this.width = this.image.width/10
                 this.height = this.image.height/10
             }else{
+                this.speed = 5
                 this.image = null
                 this.width = 50
                 this.height = 70
             }
 
+            this.canMove = true //utilisé uniquement pour le joueur principal
+            this.isDead = false //true en cas de contact latéral avec un autre player (un lakitupa)
+
+            //range de déplacement des lakitupa
+            this.minX = x-minLakitupa
+            this.maxX = x+maxLakitupa
+
+            //pour les lakitupa uniquement
             this.type = type
-            this.sens = Math.round(Math.random())
+            this.sens = Math.round(Math.random()) //commence par aller à gauche ou à droite
             this.nbImageLakitupa = 0
-            this.nbConsecImage = 0
-            this.nbBeforeChange = Math.round((10,15))
+            this.nbConsecImage = 0 //nombre de frames ou l'image n'a pas été changée, pour éviter de changer à chaque actualisation (lakitupa épileptique)
+            this.nbBeforeChange = Math.round(randomNumberBetween(10,15))
 
         }
     
@@ -135,20 +135,23 @@ addEventListener('DOMContentLoaded', () => {
 
 
         draw() {
+            //ne pas étirer les élément, mais plutot les répéter autant que nécessaire
             let nbToRepeat = this.width/this.image.width
             let nbToRepeatInt = Math.floor(this.width/this.image.width)
             let resteToRepeat = nbToRepeat-nbToRepeatInt
-            let nbMaxRepeat = 50
-            if(this.type == "sol" && nbToRepeatInt<nbMaxRepeat){
+            if(this.type == "sol"){
                 if(nbToRepeatInt>0){
-                    for(let i=0; i<nbToRepeatInt; i++){
+                    for(let i=0; i<nbToRepeatInt; i++){ //on affiche toutes les itérations complètes de l'asset
                         c.drawImage(this.image, this.position.x+i*this.image.width, this.position.y, this.image.width, this.height)
                     }
+                    //on affiche le bout restant de l'asset
                     c.drawImage(this.image, this.position.x+nbToRepeatInt*this.image.width, this.position.y, this.image.width*resteToRepeat, this.height)
                 }else{
+                    //pas besoin de le répéter, on le met en une fois
                     c.drawImage(this.image, this.position.x, this.position.y, this.width, this.height)
                 }
             }else{
+                //les plateformes
                 c.drawImage(this.image, this.position.x, this.position.y, this.width, this.height)
             }
         }
@@ -169,6 +172,7 @@ addEventListener('DOMContentLoaded', () => {
 
         draw() {
             if(this.type == "background"){
+                //mise à l'échelle du background et répétition
                 let ratio = canvas.height/this.height
                 let newWidth = this.width*ratio
 
@@ -176,11 +180,13 @@ addEventListener('DOMContentLoaded', () => {
                     c.drawImage(this.image, this.position.x+i*newWidth, this.position.y, this.width*ratio, this.height*ratio)
                 }
             }else if(this.type == "chateau"){
+                //placer le chateau de victoire centré au niveau de la porte pour la distToWin
                 c.drawImage(this.image, this.position.x-this.width/2+25, this.height, this.width, this.height)
             }
         }
     }
 
+    //créer une image à partir d'une url
     function createImage (imageSrc) {
         const image = new Image()
         image.src = imageSrc
@@ -188,26 +194,28 @@ addEventListener('DOMContentLoaded', () => {
     }
 
     //variables globales nécessaires au programmes, remplies dans la fonction init()
-    let player
+    let player //le joueur principal
+    //les différents éléments qui composent un niveau
     let platforms = []
     let lakitupas = []
     let genericOjects = []
-    let scrollOffset = 0
-    let paused = true
+    let scrollOffset = 0 //la valeur de défilement de l'écran
+    let paused = true //si le jeu est en pause, évite de faire tourner un niveau en fond quand on est dans les menus
     let nbVies = 3
     const nbNiveau = 3
     let currentLevel = null
-    let niveauFini = []
+    let niveauFini = [] //affiche pour chaque niveau s'il a été complété
     for(let i=0; i<nbNiveau; i++){
         niveauFini[i] = false
     }
     let inf = 999999999999
-    let timeToBeat = 25
+    let timeToBeat = 25 //le temps disponible pour compléter tous les niveaux pour débloquer la fin
     let chrono;
-    let bestTime = new Array(nbNiveau)
+    let bestTime = new Array(nbNiveau) //le meilleur temps par niveau
     for(let i=0; i<nbNiveau; i++){
         bestTime[i] = inf
     }
+    //la position du joueur par rapport à l'écran avant de déclencher le scroll
     let offsetPlayerRight = 400
     let offsetPlayerLeft = 100
 
@@ -221,6 +229,7 @@ addEventListener('DOMContentLoaded', () => {
         },
     }
 
+    //la création des niveaux
     function createLevel1(){
         platforms = [
             new Platform(450,630,100,40,createImage("assets/img/platform.png")),
@@ -285,6 +294,7 @@ addEventListener('DOMContentLoaded', () => {
                 new GenericObject (distToWin+offsetPlayerRight, 0, imgChateau, "chateau")]
     }
 
+    //TODO supprimer -> get coordinates pour placer les élément game design des niveaux
     document.getElementsByTagName("body")[0].addEventListener("click", (e)=>{
         console.log(e.pageX+scrollOffset,e.pageY)
     })
@@ -293,6 +303,7 @@ addEventListener('DOMContentLoaded', () => {
     function init(){
         player = new Player(100,100)
 
+        //chargement du niveau choisi
         switch(currentLevel){
             case 1:
                 createLevel1()
@@ -309,7 +320,7 @@ addEventListener('DOMContentLoaded', () => {
             default: platforms = [new Platform(0,750,10000,100, createImage("assets/img/grass.png"))]
         }
 
-        chrono = Date.now()
+        chrono = Date.now() //début du chrono
 
         scrollOffset = 0
         keys = {
@@ -324,12 +335,13 @@ addEventListener('DOMContentLoaded', () => {
 
     //animation des déplacements du joueur et de l'environnement, getion des collisions et des conditions de victoire et défaite
     function animate(){
-        requestAnimationFrame(animate)
-        c.clearRect(0,0,canvas.width,canvas.height)
+        requestAnimationFrame(animate) //callback animation
+        c.clearRect(0,0,canvas.width,canvas.height) //clear complet avant de tout réafficher
 
         //si le jeu n'est pas en cours (on est dans un menu, une animation, ...)
         if(paused) return
         
+        //affichage de tous les éléments
         genericOjects.forEach(genericOject => {
             genericOject.draw()
         })
@@ -340,7 +352,7 @@ addEventListener('DOMContentLoaded', () => {
             lakitupa.update()
         })
         
-        player.update()
+        player.update() //le joueur update en dernier pour s'afficher devant tous les autres éléments
 
         //définition du sens du joueur pour choisir image affichée
         if(keys.right.pressed){
@@ -353,6 +365,7 @@ addEventListener('DOMContentLoaded', () => {
             nbImagePlayer=0
         }
 
+        //déplacement du joueur
         if (keys.right.pressed && player.position.x < offsetPlayerRight) {
             player.velocity.x = player.speed
         } else if (keys.left.pressed && player.position.x > offsetPlayerLeft) {
@@ -416,6 +429,7 @@ addEventListener('DOMContentLoaded', () => {
             }
 
             //-----------
+            //collision des lakitupa avec le décor, ils changent de sens à la rencontre d'un obstacle
             lakitupas.forEach(lakitupa => {
                 if (lakitupa.position.y + lakitupa.height <= platform.position.y &&
                     lakitupa.position.y + lakitupa.height + lakitupa.velocity.y >= platform.position.y && 
@@ -428,7 +442,6 @@ addEventListener('DOMContentLoaded', () => {
                     lakitupa.position.x<=platform.position.x+platform.width &&
                     lakitupa.position.y+lakitupa.height>=platform.position.y &&
                     lakitupa.position.y<=platform.position.y+platform.height){
-                        lakitupa.canMove = false
                         lakitupa.velocity.x = 0
                         lakitupa.sens = (lakitupa.sens == 0) ? 1 : 0
                 }
@@ -436,7 +449,7 @@ addEventListener('DOMContentLoaded', () => {
             //-----------
         })
 
-        //la mort avec le contact des lakitupas
+        //la mort avec le contact du joueur avec des lakitupas
         lakitupas.forEach(lakitupa => {
             //si il va à gauche et qu'il n'a pas atteint sa bordure : il continue
             if(lakitupa.sens == 0 && lakitupa.position.x+scrollOffset-lakitupa.speed>lakitupa.minX){
@@ -454,11 +467,12 @@ addEventListener('DOMContentLoaded', () => {
                 player.position.y + player.height + player.velocity.y >= lakitupa.position.y && 
                 player.position.x + player.width >= lakitupa.position.x &&
                 player.position.x <= lakitupa.position.x + lakitupa.width){
-                    player.velocity.y = 0
+                    player.velocity.y-= player.jumpHeight //le joueur rebondit sur le lakitupa
 
                     lakitupa.sens = (lakitupa.sens == 0) ? 1 : 0
                     let rdNumber = Math.round(randomNumberBetween(-1,1))
 
+                    //déplacement du lakitupa aléatoirement à gauche ou droite du perso principal
                     if(rdNumber == -1) lakitupa.position.x -= 5
                     else if(rdNumber == 1) lakitupa.position.x += 5
             }
@@ -473,7 +487,9 @@ addEventListener('DOMContentLoaded', () => {
             }
         })
 
-        if(scrollOffset>=distToWin){ //win
+        //scénario de win
+        if(scrollOffset>=distToWin){
+            //enregistrement du temps
             now = Date.now()
             chrono = Math.round((now-chrono)/1000)
             if(bestTime[currentLevel-1] > chrono){
@@ -482,21 +498,26 @@ addEventListener('DOMContentLoaded', () => {
 
             paused = true
             niveauFini[currentLevel-1] = true
-            document.getElementById("menu").style.transform = "translateY(0%)"
-            majContentMenu()
+            document.getElementById("menu").style.transform = "translateY(0%)" //on réaffiche le menu
+            majContentMenu() //on met à jour toutes les données du menu (barre d'avancement des niveaux, temps par niveaux et temps total, vies)
 
             //arrêt des musiques
             stopLongSounds()
 
         }
 
-        if(player.position.y > canvas.height || player.isDead){ //mort
+        //scénario de mort
+        //condition 1 : le joueur est tombé dans un trou
+        //condition 2 : isDead car il est rentré en contact latéral avec un lakitupa
+        if(player.position.y > canvas.height || player.isDead){
             stopLongSounds()
             paused = true
+            //si il lui reste des vies, on en retire
             if(nbVies-1>0){
                 nbVies--
                 // audios["no"].play()
             }else{
+                //sinon, il a perdu, on reset l'avancement et les vies
                 // audios["perdu"].play()
                 nbVies = 3
                 for(let i=0; i<nbNiveau; i++){
@@ -510,6 +531,7 @@ addEventListener('DOMContentLoaded', () => {
 
     }
 
+    //on lance le jeu avec le bon niveau
     for(let i=0; i<nbNiveau; i++){
         document.getElementsByClassName("lineLevels")[0].children[i].addEventListener("click", ()=>{
             currentLevel = i+1
@@ -527,7 +549,7 @@ addEventListener('DOMContentLoaded', () => {
     init()
     animate()
 
-    let lastJump = Date.now()
+    let lastJump = Date.now() //limiter les multiples sauts en l'air
     addEventListener('keydown', ({ keyCode }) => {
         switch (keyCode) {
             case 37:
@@ -556,7 +578,6 @@ addEventListener('DOMContentLoaded', () => {
                 keys.right.pressed = false
                 player.velocity.x = 0
                 break
-            //TODO vérifier si j'ai bien tout ici (saut)
         }
     })
 
@@ -583,29 +604,119 @@ addEventListener('DOMContentLoaded', () => {
         document.getElementById("pasJouerText").style.display = "flex"
     })
 
+    //click sur le bouton jouer
     document.getElementById("jouerBtn").addEventListener("click", ()=>{
         document.getElementById("intro").classList.add("endIntro")
         // audios["audioIntro"].play()
     })   
 
+    //click sur la mysteryBox du menu
     document.getElementsByClassName("mysteryBox")[0].addEventListener("click", ()=>{
         createModale("test",document.getElementById("menu"), "peach")
     })
 
+    //click sur le bouton d'information pour ouvrir la modale
     document.getElementById("question").addEventListener("click", ()=>{
-        //TODO faire la modale avec tout le contenu nécessaire
-        createModale("Y a dé choz à fére é tou",document.getElementById("menu"))
+        createModale("",document.getElementById("menu"), "help")
     })
 
+    //easterEgg rockroll bario
+    document.getElementById("barioLogo").addEventListener("click", ()=>{
+        location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+    })
+
+    //fonction pour créer une modale avec un texte à ajouter, un élément auquel ajouter la modale, et un type
     function createModale(texte, ajout, type){
         let div = document.createElement("div")
         div.className = "modale"
         if(type == "peach"){
             div.style.backgroundImage = "url(assets/img/peachColored.png)"
-        }else{
+        }else if(type == "help"){ //création de la modale d'information
+            div.classList.add("modaleHelp")
+
+            let h1 = document.createElement("h1")
+            h1.innerHTML = "HuperBarioBruce2"
+            let h3 = document.createElement("h3")
+            h3.innerHTML = "(Pourquoi le 2 ? parce que le 1)"
+
+            let pdiv = document.createElement("div")
+            let p1 = document.createElement("p")
+            p1.innerHTML = "Raisons de jouer à HBB2 :"
+            let ul = document.createElement("ul")
+            let li = document.createElement("li")
+            li.innerHTML = "Bario a volé un goûter, ce crime ne saurait rester impuni."
+            ul.appendChild(li)
+            pdiv.appendChild(p1)
+            pdiv.appendChild(ul)
+
+            let p2 = document.createElement("p")
+            p2.innerHTML = "Classement de popularité des personnages :"
+            let ol = document.createElement("ol")
+            let oli1 = document.createElement("li")
+            oli1.innerHTML = "<mark>Bario</mark>"
+            let oli2 = document.createElement("li")
+            oli2.innerHTML = "Peach"
+            let oli3 = document.createElement("li")
+            oli3.innerHTML = "Lakitupa 1"
+            let oli4 = document.createElement("li")
+            oli4.innerHTML = "Lakitupa 3"
+            let oli5 = document.createElement("li")
+            oli5.innerHTML = "Lakitupa 2"
+            ol.appendChild(oli1)
+            ol.appendChild(oli2)
+            ol.appendChild(oli3)
+            ol.appendChild(oli4)
+            ol.appendChild(oli5)
+            pdiv.appendChild(p2)
+            pdiv.appendChild(ol)
+
+            let table = document.createElement("table")
+            let row1 = document.createElement("tr")
+            let dataR1 = document.createElement("td")
+            dataR1.innerHTML = "Je cherche un stage pour fin mars 2023 svp"
+            dataR1.setAttribute("colspan",2)
+            row1.appendChild(dataR1)
+
+            let row2 = document.createElement("tr")
+            data1R2 = document.createElement("td")
+            let a1 = document.createElement("a")
+            a1.href = "https://github.com/lcouedor"
+            a1.innerHTML = "Mon github"
+            data1R2.appendChild(a1)
+            data2R2 = document.createElement("td")
+            let a2 = document.createElement("a")
+            a2.href = "https://www.linkedin.com/in/leocouedor/"
+            a2.innerHTML = "Mon linkedin"
+            data2R2.appendChild(a2)
+            row2.appendChild(data1R2)
+            row2.appendChild(data2R2)
+
+            let tbody = document.createElement("tbody")
+            tbody.appendChild(row1)
+            tbody.appendChild(row2)
+
+            table.appendChild(tbody)
+
+            let div2 = document.createElement("div")
+            div2.classList = "tableDiv"
+            div2.appendChild(table)
+
+            pdiv.appendChild(div2)
+
+            let p3 = document.createElement("p")
+            p3.innerHTML = "(Le menu principal contient un easter egg, à toi de le trouver !)"
+            p3.classList = "easterEggText"
+
+            pdiv.appendChild(p3)
+
+            div.appendChild(h1)
+            div.appendChild(h3)
+            div.appendChild(pdiv)
+        }else{ //cas générique, on ajoute simplement le texte au corps
             div.innerHTML = texte
         }
         
+        //le voile gris semi transparent en fond, dismiss le tout en cas de click
         let voile = document.createElement("div")
         voile.className = "voile"
 
@@ -623,6 +734,7 @@ addEventListener('DOMContentLoaded', () => {
         })
     }
     
+    //retourne le nombre de niveaux terminés
     function nbNiveauxFinis(){
         let nb = 0
         for(let i=0; i<niveauFini.length; i++){
@@ -631,6 +743,7 @@ addEventListener('DOMContentLoaded', () => {
         return nb
     }
 
+    //mise à jour de toutes les données du menu
     function majContentMenu(){
         let majTemps = document.getElementsByClassName("tempsEcoule")[0]
         let sum = 0
@@ -688,12 +801,12 @@ addEventListener('DOMContentLoaded', () => {
 
         if(jeuFini()){
             paused = true
-            // alert("Jeu fini, félicitation")
             createOutro()
         }
     }
     majContentMenu()
 
+    //true si le jeu est fini, false sinon (true si tous les niveaux sont finis dans le temps imparti)
     function jeuFini(){
         for(let i=0; i<nbNiveau; i++){
             if(!niveauFini[i]){
@@ -760,6 +873,7 @@ addEventListener('DOMContentLoaded', () => {
     createIntro()
 
 
+    //création de l'écran d'outro
     async function createOutro(){
         //remise à init des valeurs en cas ou le bouton skip intro avait été pressé
         delayText = 30
