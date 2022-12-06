@@ -5,19 +5,13 @@ addEventListener('DOMContentLoaded', () => {
                     audioIntro: new Audio('assets/sounds/intro.mp3'),
                     perdu: new Audio('assets/sounds/perdu.mp3'),
                     no: new Audio('assets/sounds/no.mp3'),
-                    audioLvl1: new Audio('assets/sounds/lvl1.mp3'),
-                    audioLvl2: new Audio('assets/sounds/lvl2.mp3'),
-                    audioLvl3: new Audio('assets/sounds/lvl3.mp3')};
+                    audioLvl: new Audio('assets/sounds/intro.mp3')};
      
-    audios["audioLvl1"].loop = true
-    audios["audioLvl2"].loop = true
-    audios["audioLvl3"].loop = true
+    audios["audioLvl"].loop = true
 
     //mettre en pause les longs audios (intro, outro, niveaux)
     function stopLongSounds(){
-        audios["audioLvl1"].pause()
-        audios["audioLvl2"].pause()
-        audios["audioLvl3"].pause()
+        audios["audioLvl"].pause()
     }
 
     const canvas = document.querySelector('canvas')
@@ -26,25 +20,39 @@ addEventListener('DOMContentLoaded', () => {
     canvas.width = window.innerWidth
     canvas.height = window.innerHeight
 
+    let domErreurRatio = document.getElementById("errorRatio")
+
+    //vérifie que le ratio de fenêtre est correct pour afficher le jeu, sinon affiche la fenêtre d'erreur
+    function checkRatio(){
+        //cas de resize de la fenêtre en jeu, on actualise le canva
+        canvas.width = window.innerWidth
+        canvas.height = window.innerHeight
+        minPosYplat = canvas.height-groundHeight
+        let ratio = canvas.width/canvas.height
+
+        if(!(ratio>1.2 && ratio < 2) || canvas.width<canvas.height || canvas.height<650){
+            domErreurRatio.classList.remove("ratioCorrect")
+        }else{
+            domErreurRatio.classList.add("ratioCorrect")
+        }
+    }
+
     const gravity = 1.5
     const distToWin = 4000 //distance à parcourir avant de valider le niveau
-    const tabImgPlayer = [[createImage("assets/img/mario/MarioStand0.png"), 
-                            createImage("assets/img/mario/MarioRunLeft1.png"), 
-                            createImage("assets/img/mario/MarioRunLeft1.png")],
-                            [createImage("assets/img/mario/MarioStand1.png"), 
-                            createImage("assets/img/mario/MarioRunRight1.png"), 
-                            createImage("assets/img/mario/MarioRunRight2.png")]]
+    const tabImgPlayer = [[createImage("assets/img/voldy/VoldyStand0.png"), 
+                            createImage("assets/img/voldy/VoldyRunLeft1.png"), 
+                            createImage("assets/img/voldy/VoldyRunLeft1.png")],
+                            [createImage("assets/img/voldy/VoldyStand1.png"), 
+                            createImage("assets/img/voldy/VoldyRunRight1.png"), 
+                            createImage("assets/img/voldy/VoldyRunRight2.png")]]
 
-    const tabImageLakitupa = [[createImage("assets/img/lakitupa/lakitupaStandingLeft.png"), 
-                            createImage("assets/img/lakitupa/lakitupaMoveLeft.png"), 
-                            createImage("assets/img/lakitupa/lakitupaMoveLeft1.png")],
-                            [createImage("assets/img/lakitupa/lakitupaStandingRight.png"), 
-                            createImage("assets/img/lakitupa/lakitupaMoveRight.png"), 
-                            createImage("assets/img/lakitupa/lakitupaMoveRight1.png")]]
+    const tabImageLakitupa = [[createImage("assets/img/chiffon/chiffonGauche.png")],
+                            [createImage("assets/img/chiffon/chiffonDroit.png")]]
 
     const imgChateau = createImage("assets/img/chateau.png")
-    const imgBg = createImage("assets/img/bg.jpeg")
-
+    // const imgBg = createImage("assets/img/bg.jpeg")
+    const imgBg = createImage("assets/img/background.png")
+    
     let nbImagePlayer = 0
     let sens = 1 // 1 = droite | 0 = gauche
 
@@ -73,7 +81,11 @@ addEventListener('DOMContentLoaded', () => {
                 this.width = this.image.width/10
                 this.height = this.image.height/10
             }else{
-                this.speed = 5
+                if(!document.getElementById("fpsValue").checked){
+                    this.speed = 5*2
+                }else{
+                    this.speed = 5
+                }
                 this.image = null
                 this.width = 50
                 this.height = 70
@@ -124,9 +136,10 @@ addEventListener('DOMContentLoaded', () => {
     class Platform {
         constructor(x,y,width,height,image, type) {
             this.position = {
-                x,
-                y
+                x: x,
+                y: minPosYplat-y
             }
+            this.y = y
             this.width = width
             this.height = height
             this.image = image
@@ -135,6 +148,7 @@ addEventListener('DOMContentLoaded', () => {
 
 
         draw() {
+            this.position.y = minPosYplat-this.y
             //ne pas étirer les élément, mais plutot les répéter autant que nécessaire
             let nbToRepeat = this.width/this.image.width
             let nbToRepeatInt = Math.floor(this.width/this.image.width)
@@ -181,7 +195,7 @@ addEventListener('DOMContentLoaded', () => {
                 }
             }else if(this.type == "chateau"){
                 //placer le chateau de victoire centré au niveau de la porte pour la distToWin
-                c.drawImage(this.image, this.position.x-this.width/2+25, this.height, this.width, this.height)
+                c.drawImage(this.image, this.position.x-this.width/4+25, minPosYplat-this.height/2, this.width/2, this.height/2)
             }
         }
     }
@@ -209,7 +223,7 @@ addEventListener('DOMContentLoaded', () => {
         niveauFini[i] = false
     }
     let inf = 999999999999
-    let timeToBeat = 25 //le temps disponible pour compléter tous les niveaux pour débloquer la fin
+    let timeToBeat = 55 //le temps disponible pour compléter tous les niveaux pour débloquer la fin
     let chrono;
     let bestTime = new Array(nbNiveau) //le meilleur temps par niveau
     for(let i=0; i<nbNiveau; i++){
@@ -218,6 +232,10 @@ addEventListener('DOMContentLoaded', () => {
     //la position du joueur par rapport à l'écran avant de déclencher le scroll
     let offsetPlayerRight = 400
     let offsetPlayerLeft = 100
+
+    let groundHeight = 30
+    let platformHeight = 30
+    let minPosYplat = canvas.height-groundHeight
 
     //gestion des appuis, même maintenus, sur les touches flèches gauche et droite
     let keys = {
@@ -232,25 +250,24 @@ addEventListener('DOMContentLoaded', () => {
     //la création des niveaux
     function createLevel1(){
         platforms = [
-            new Platform(450,630,100,40,createImage("assets/img/platform.png")),
-            new Platform(600,700,50,80,createImage("assets/img/platform.png")),
-            new Platform(650,580,100,40,createImage("assets/img/platform.png")),
-            new Platform(1280,580,100,40,createImage("assets/img/platform.png")),
-            new Platform(1150,720,50,40,createImage("assets/img/platform.png")),
-            new Platform(1500,500,100,40,createImage("assets/img/platform.png")),
-            new Platform(1500,500,100,40,createImage("assets/img/platform.png")),
+            new Platform(430,150,100,platformHeight,createImage("assets/img/platform.png")),
+            new Platform(600,60,50,platformHeight*2,createImage("assets/img/platform.png")),
+            new Platform(650,200,200,40,createImage("assets/img/platform.png")),
+            new Platform(1150,100,50,40,createImage("assets/img/platform.png")),
+            new Platform(1280,200,200,40,createImage("assets/img/platform.png")),
+            new Platform(1500,300,100,40,createImage("assets/img/platform.png")),
             new Platform(1600,400,100,40,createImage("assets/img/platform.png")),
             new Platform(1700,300,100,40,createImage("assets/img/platform.png")),
-            new Platform(1800,200,100,40,createImage("assets/img/platform.png")),
-            new Platform(1900,100,500,40,createImage("assets/img/platform.png")),
-            new Platform(3000,620,50,150,createImage("assets/img/platform.png")),
-            new Platform(3130,490,50,50,createImage("assets/img/platform.png")),
-            new Platform(3220,400,700,50,createImage("assets/img/platform.png")),
-            new Platform(3920,400,30,500,createImage("assets/img/platform.png")),
+            new Platform(1800,400,100,40,createImage("assets/img/platform.png")),
+            new Platform(1900,500,500,40,createImage("assets/img/platform.png")),
+            new Platform(3000,100,50,150,createImage("assets/img/platform.png")),
+            new Platform(3130,200,50,50,createImage("assets/img/platform.png")),
+            new Platform(3220,300,700,50,createImage("assets/img/platform.png")),
+            new Platform(3920,300,30,500,createImage("assets/img/platform.png")),
             //le sol
-            new Platform(0,750,900,100, createImage("assets/img/grass.png"), "sol"),
-            new Platform(1000,750,250,100, createImage("assets/img/grass.png"), "sol"),
-            new Platform(2670,750,3000,100, createImage("assets/img/grass.png"), "sol")]
+            new Platform(0,0,900,groundHeight, createImage("assets/img/grass.png"), "sol"),
+            new Platform(1000,0,250,groundHeight, createImage("assets/img/grass.png"), "sol"),
+            new Platform(2670,0,3000,groundHeight, createImage("assets/img/grass.png"), "sol")]
 
         genericOjects = [
             new GenericObject (0, 0, imgBg, "background"),
@@ -270,12 +287,12 @@ addEventListener('DOMContentLoaded', () => {
             new Platform(450,670,100,40,createImage("assets/img/platform.png")), 
             new Platform(650,610,100,40,createImage("assets/img/platform.png")),
             //le sol
-            new Platform(0,750,900,100, createImage("assets/img/grass.png")),
-            new Platform(1000,750,30000,100, createImage("assets/img/grass.png"))]
+            new Platform(0,0,900,100, createImage("assets/img/grass.png")),
+            new Platform(1000,0,30000,100, createImage("assets/img/grass.png"))]
 
             genericOjects = [
                 new GenericObject (0, 0, imgBg, "background"),
-                new GenericObject (distToWin+offsetPlayerRight, 0, imgChateau, "chateau")]
+                new GenericObject (distToWin+offsetPlayerRight, minPosYplat, imgChateau, "chateau")]
     }
 
     function createLevel3(){
@@ -286,18 +303,20 @@ addEventListener('DOMContentLoaded', () => {
             new Platform(450,670,100,40,createImage("assets/img/platform.png")), 
             new Platform(650,610,100,40,createImage("assets/img/platform.png")),
             //le sol
-            new Platform(0,750,900,100, createImage("assets/img/grass.png")),
-            new Platform(1000,750,30000,100, createImage("assets/img/grass.png"))]
+            new Platform(0,0,900,100, createImage("assets/img/grass.png")),
+            new Platform(1000,0,30000,100, createImage("assets/img/grass.png"))]
 
             genericOjects = [
                 new GenericObject (0, 0, imgBg, "background"),
-                new GenericObject (distToWin+offsetPlayerRight, 0, imgChateau, "chateau")]
+                new GenericObject (distToWin+offsetPlayerRight, minPosYplat, imgChateau, "chateau")]
     }
 
     //TODO supprimer -> get coordinates pour placer les élément game design des niveaux
     document.getElementsByTagName("body")[0].addEventListener("click", (e)=>{
         console.log(e.pageX+scrollOffset,e.pageY)
     })
+
+    let multFreshRate
 
     //initialisation des variables de l'environnement
     function init(){
@@ -307,15 +326,15 @@ addEventListener('DOMContentLoaded', () => {
         switch(currentLevel){
             case 1:
                 createLevel1()
-                // audios["audioLvl1"].play()
+                audios["audioLvl"].play()
                 break
             case 2:
                 createLevel2()
-                // audios["audioLvl2"].play()
+                audios["audioLvl"].play()
                 break
             case 3:
                 createLevel3()
-                // audios["audioLvl3"].play()
+                audios["audioLvl"].play()
                 break
             default: platforms = [new Platform(0,750,10000,100, createImage("assets/img/grass.png"))]
         }
@@ -335,6 +354,9 @@ addEventListener('DOMContentLoaded', () => {
 
     //animation des déplacements du joueur et de l'environnement, getion des collisions et des conditions de victoire et défaite
     function animate(){
+
+        checkRatio()
+
         requestAnimationFrame(animate) //callback animation
         c.clearRect(0,0,canvas.width,canvas.height) //clear complet avant de tout réafficher
 
@@ -498,7 +520,7 @@ addEventListener('DOMContentLoaded', () => {
 
             paused = true
             niveauFini[currentLevel-1] = true
-            document.getElementById("menu").style.transform = "translateY(0%)" //on réaffiche le menu
+            document.getElementById("menu").style.transform = "translate(-50%,-50%)" //on réaffiche le menu
             majContentMenu() //on met à jour toutes les données du menu (barre d'avancement des niveaux, temps par niveaux et temps total, vies)
 
             //arrêt des musiques
@@ -515,17 +537,17 @@ addEventListener('DOMContentLoaded', () => {
             //si il lui reste des vies, on en retire
             if(nbVies-1>0){
                 nbVies--
-                // audios["no"].play()
+                audios["no"].play()
             }else{
                 //sinon, il a perdu, on reset l'avancement et les vies
-                // audios["perdu"].play()
+                audios["perdu"].play()
                 nbVies = 3
                 for(let i=0; i<nbNiveau; i++){
                     niveauFini[i] = false
                 }
-                createModale("Bouhhhhh, il est nullllll ! Recommence. Vite. Bario a faim.", document.getElementById("menu"))
+                createModale("Bouhhhhh, il est nullllll ! Recommence. Vite. Voldy veut son nez.", document.getElementById("menu"))
             }
-            document.getElementById("menu").style.transform = "translateY(0%)"
+            document.getElementById("menu").style.transform = "translate(-50%,-50%)"
             majContentMenu()
         }
 
@@ -543,7 +565,7 @@ addEventListener('DOMContentLoaded', () => {
     function gameRun(){
         init()
         paused = false
-        document.getElementById("menu").style.transform = "translateY(-100%)"
+        document.getElementById("menu").style.transform = "translate(-50%,-150%)"
     }
 
     init()
@@ -625,26 +647,36 @@ addEventListener('DOMContentLoaded', () => {
         location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
     })
 
+    //bouton rejouer sur l'écran de fin
+    document.getElementById("rejouerBtn").addEventListener("click", ()=>{
+        location.reload()
+    })
+
     //fonction pour créer une modale avec un texte à ajouter, un élément auquel ajouter la modale, et un type
     function createModale(texte, ajout, type){
         let div = document.createElement("div")
         div.className = "modale"
         if(type == "peach"){
             div.style.backgroundImage = "url(assets/img/peachColored.png)"
+            div.classList.add("centerPeach")
+            let h3 = document.createElement("h3")
+            h3.innerHTML = "Le saviez-vous ? Le jeu devait à l'origine être un Bario Bruce !"
+            h3.classList.add("titreMysteryBox")
+            div.appendChild(h3)
         }else if(type == "help"){ //création de la modale d'information
             div.classList.add("modaleHelp")
 
             let h1 = document.createElement("h1")
-            h1.innerHTML = "HuperBarioBruce2"
+            h1.innerHTML = "Voldy's Legacy 1"
             let h3 = document.createElement("h3")
-            h3.innerHTML = "(Pourquoi le 2 ? parce que le 1)"
+            h3.innerHTML = "(Pourquoi le 1 ? parce que le 2 peut-être un jour ?)"
 
             let pdiv = document.createElement("div")
             let p1 = document.createElement("p")
-            p1.innerHTML = "Raisons de jouer à HBB2 :"
+            p1.innerHTML = "Raisons de jouer à Voldy's Legacy :"
             let ul = document.createElement("ul")
             let li = document.createElement("li")
-            li.innerHTML = "Bario a volé un goûter, ce crime ne saurait rester impuni."
+            li.innerHTML = "Voldy à un barbecue la semaine prochaine, il a besoin de son nez pour sentir les épices du poulet yassa"
             ul.appendChild(li)
             pdiv.appendChild(p1)
             pdiv.appendChild(ul)
@@ -653,15 +685,15 @@ addEventListener('DOMContentLoaded', () => {
             p2.innerHTML = "Classement de popularité des personnages :"
             let ol = document.createElement("ol")
             let oli1 = document.createElement("li")
-            oli1.innerHTML = "<mark>Bario</mark>"
+            oli1.innerHTML = "<mark>Harry (on comprend pas pourquoi)</mark>"
             let oli2 = document.createElement("li")
-            oli2.innerHTML = "Peach"
+            oli2.innerHTML = "Mangetesmort 1"
             let oli3 = document.createElement("li")
-            oli3.innerHTML = "Lakitupa 1"
+            oli3.innerHTML = "Hermione (?? elle est même pas là ?)"
             let oli4 = document.createElement("li")
-            oli4.innerHTML = "Lakitupa 3"
+            oli4.innerHTML = "Mangetesmort 2"
             let oli5 = document.createElement("li")
-            oli5.innerHTML = "Lakitupa 2"
+            oli5.innerHTML = "Voldemort (mal aimé de sa propre oeuvre)"
             ol.appendChild(oli1)
             ol.appendChild(oli2)
             ol.appendChild(oli3)
@@ -826,7 +858,7 @@ addEventListener('DOMContentLoaded', () => {
     async function createIntro(){
         let elem = document.getElementById("intro")
 
-        let text1 = "Bario dégustait son goûter sur l'herbe verte quand le grand vilain Bruce Manjeurdegouté lui a volé."
+        let text1 = "Harry Potter par ci, Harry Potter par là, y en a toujours que pour lui !"
         let letters = text1.split("")
         let i=0
         while(i<letters.length){
@@ -837,7 +869,7 @@ addEventListener('DOMContentLoaded', () => {
 
         await waitForMs(delayParagraphe);
 
-        let text2 = "Furieux, il décide de partir à sa poursuite pour récupérer ce qui lui appartient."
+        let text2 = "Mais Voldemort aussi à ses problèmes. Mardi dernier Harry lui a volé son nez ! C'est vraiment pas nice..."
         letters = text2.split("")
         i=0
         while(i<letters.length){
@@ -848,7 +880,7 @@ addEventListener('DOMContentLoaded', () => {
 
         await waitForMs(delayParagraphe);
 
-        let text3 = "Aide Bario à fouiller les manoirs de Bruce, mais fais attention aux Lakitupas qui surveillent le jardin, et aux pièges collants ! Tu as "+timeToBeat+"s pour finir avant que Bruce ne mange ton goûter, bonne chance !"
+        let text3 = "Guide Voldy jusqu'à Poudlard pour trouver Harry et récupérer ses fosses nasales héritées de son grand-oncle. Fais bien attention aux mangetesmorts qui ont changé de camp et surveillent maintenant les alentours pour protéger Harry des forces du mal. Tu as "+timeToBeat+"s pour récupérer son nez avant qu'Harry ne le transforme en morve de troll, bonne chance !"
         letters = text3.split("")
         i=0
         while(i<letters.length){
@@ -856,7 +888,7 @@ addEventListener('DOMContentLoaded', () => {
             elem.children[2].innerHTML+=letters[i]
             i++
         }
-        audios["audioIntro"].pause()
+        // audios["audioIntro"].pause()
 
         await waitForMs(delayEndText);
         document.getElementById("passText").style.display = "none"
@@ -883,7 +915,7 @@ addEventListener('DOMContentLoaded', () => {
         let elem = document.getElementById("outro")
 
         elem.classList.add("triggerOutro")
-        let text = "Félicitation à toi jeune guerrier pour avoir récupéré le saint pitch"
+        let text = "Voldy te remercie, il a pu récupérer son nez."
         letters = text.split("")
         i=0
         while(i<letters.length){
@@ -894,7 +926,7 @@ addEventListener('DOMContentLoaded', () => {
 
         await waitForMs(delayParagraphe);
 
-        text = "Non pas celle là !"
+        text = "Le poulet yassa n'aura jamais eu aussi bonne saveur grâce à toi !"
         letters = text.split("")
         i=0
         while(i<letters.length){
@@ -905,43 +937,10 @@ addEventListener('DOMContentLoaded', () => {
 
         await waitForMs(delayParagraphe);
 
-        text = "Ah c'est mieux"
-        letters = text.split("")
-        i=0
-        while(i<letters.length){
-            await waitForMs(delayText);
-            elem.children[2].innerHTML+=letters[i]
-            i++
-        }
+        document.getElementsByClassName("lineJouer")[1].classList.add("growthEffect")
+        document.getElementsByClassName("lineJouer")[1].style.cssText+="transform: scale(1);"
 
-        await waitForMs(delayParagraphe);
-
-        text = "Rendez-vous le 34 février 2042 pour la récupération du saint Candy-up volé par l'Abruce-T !"
-        letters = text.split("")
-        i=0
-        while(i<letters.length){
-            await waitForMs(delayText);
-            elem.children[3].innerHTML+=letters[i]
-            i++
-        }
+        // location.reload()
     }
 
 })
-
-
-// https://www.youtube.com/watch?v=VeFzYPKbz1g 
-
-/*
-    liste sounds : 
-        - type : https://www.youtube.com/watch?v=2BUNHd7ENZk
-        - message d'intro jouer : intro.mp3
-        - message d'intro pas jouer :
-        - lvl 1 : https://www.youtube.com/watch?v=M9BoLuyFGx0
-        - lvl 2 : https://www.youtube.com/watch?v=bT7wlxCT5Es
-        - lvl 3 : 
-        - menu : 
-        - quand on perd une vie : no.mp3
-        - quand on perd toutes nos vies : https://www.youtube.com/watch?v=HU8fNigHTUs
-        - quand on gagne :
-        - générique : https://www.youtube.com/watch?v=VeFzYPKbz1g
-*/

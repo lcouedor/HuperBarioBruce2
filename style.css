@@ -1,6 +1,6 @@
 @font-face {
-    font-family: marioFont;
-    src: url(assets/fonts/Mario-Party-Hudson-Font.ttf);
+    font-family: harryPotter;
+    src: url(assets/fonts/HARRYP__.TTF);
 }
 
 *{
@@ -34,12 +34,12 @@ body{
     padding-top: 2vh;
     width: 70%;
     height: fit-content;
-    font-family: marioFont;
+    font-family: harryPotter;
 }
 
 #pasJouerText{
     position: absolute;
-    font-family: marioFont;
+    font-family: harryPotter;
     left: 50%;
     bottom: 10%;
     transform: translateX(-50%);
@@ -78,7 +78,7 @@ body{
 }
 
 .jouerBtn{
-    font-family: marioFont;
+    font-family: harryPotter;
     position: relative;
     background-color: transparent;
     border-radius: 50px;
@@ -198,9 +198,10 @@ body{
     width: 100%;
     height: 100%;
     position: absolute;
-    top: 0;
-    left: 0;
-    background-image: url(assets/img/menu.jpg);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    background-image: url(assets/img/menu_.jpg);
     background-repeat: no-repeat;
     background-size: cover;
     transition: all 0.2s;
@@ -253,7 +254,7 @@ body{
         background-color: black;
     }
     100%{
-        background-color: plum;
+        background-color: #40724d;
     }
 }
 
@@ -271,24 +272,14 @@ body{
     align-items: center;
     flex-direction: row;
     width: 100%;
-    background-color: black;
+    background-color: transparent;
     height: 15vh;
     position: relative;
 }
 
-.fusion{
-    background: rgb(2,0,36);
-    background: linear-gradient(180deg, rgba(2,0,36,1) 0%, rgba(37,156,254) 100%);
-    position: absolute;
-    left: 0;
-    top: 12.5%;
-    width: 100%;
-    height: 5vh;
-}
-
 .barioLogo{
     margin-left: 5vh;
-    background-image: url(assets/img/mario/MarioStand1.png);
+    background-image: url(assets/img/voldy.png);
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
@@ -310,7 +301,7 @@ body{
 .tempsEcoule{
     font-size: 3.5rem;
     color: white;
-    font-family: marioFont;
+    font-family: harryPotter;
     position: absolute;
     top: 0;
     right: 5%;
@@ -341,11 +332,15 @@ body{
     display: flex;
 }
 
+.timersLvl div{
+    color: white;
+}
+
 div[class*='time-']{
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: marioFont;
+    font-family: harryPotter;
     font-size: 3rem;
 }
 
@@ -360,16 +355,17 @@ div[class*='time-']{
 
 .dottedLine2{
     width: 0;
-    border-color: gold;
+    border-color: #6cf791;
 }
 
 .lineLevels button{
+    color: rgb(79, 79, 79);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 20;
-    font-family: marioFont;
-    box-shadow: inset 0px 0px 70px plum;
+    font-family: harryPotter;
+    box-shadow: inset 0px 0px 70px #40724d;
     font-size: 10rem;
     border: 5px solid black;
     width: 15vw;
@@ -377,22 +373,22 @@ div[class*='time-']{
     border-radius: 100%;
     cursor: pointer;
     background-position: center;
-    background-size: contain;
+    background-size: cover;
     background-repeat: no-repeat;
 }
 
 .lineLevels button:nth-child(1){
-    background-image: url(assets/img/logolvl1.png);
+    background-image: url(assets/img/logolvl1.jpg);
 }
 .lineLevels button:nth-child(2){
-    background-image: url(assets/img/logolvl2.png);
+    background-image: url(assets/img/logolvl2.jpg);
 }
 .lineLevels button:nth-child(3){
-    background-image: url(assets/img/logolvl3.png);
+    background-image: url(assets/img/logolvl3.jpg);
 }
 
 .levelFinished{
-    border: 5px double gold !important;
+    border: 5px double #40724d !important;
 }
 
 
@@ -434,11 +430,12 @@ div[class*='time-']{
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    font-family: marioFont;
+    font-family: harryPotter;
     font-size: 3rem;
 }
 
 .modaleHelp{
+    overflow-y: scroll;
     font-size: 2rem;
     font-family: Arial, Helvetica, sans-serif;
     width: 100%;
@@ -448,7 +445,7 @@ div[class*='time-']{
 .modaleHelp h1, .modaleHelp h3{
     font-size: 4rem;
     margin-top: 2vh;
-    font-family: marioFont;
+    font-family: harryPotter;
     width: 100%;
     display: flex;
     align-items: center;
@@ -486,7 +483,7 @@ div[class*='time-']{
     align-items: center;
     justify-content: center;
     color: white;
-    font-family: marioFont;
+    font-family: harryPotter;
     font-size: 3rem;
     height: 5vh;
     width: 5vh;
@@ -521,4 +518,140 @@ table a{
 
 .easterEggText{
     font-size: 1rem;
+}
+
+.centerPeach{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.titreMysteryBox{
+    background-color: rgb(90, 90, 90, 0.8);
+    font-size: 1.5rem;
+    color: white;
+}
+
+#errorRatio{
+    flex-direction: column;
+    z-index: 120;
+    background-color: black;
+    height: 100%;
+    width: 100%;
+    color: white;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: harryPotter;
+}
+
+#errorRatio h1{
+    display: table-cell;
+    text-align: center;
+    font-size: 3rem;
+}
+
+#errorRatio p{
+    display: table-cell;
+    text-align: center;
+    font-size: 2rem;
+}
+
+.ratioCorrect{
+    display: none !important;
+}
+
+#rejouerBtn{
+    border: 1px solid #40724d;
+    color: white;
+    font-size: 3rem;
+}
+
+
+/* The switch - the box around the slider */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 10vw;
+    height: 3vw;
+}
+  
+/* Hide default HTML checkbox */
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+  
+/* The slider */
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+  
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 3vw;
+    width: 3vw;
+    left: 0;
+    bottom: 0;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+  
+input:checked + .slider {
+    background-color: #6cf791;
+}
+  
+input:focus + .slider {
+    box-shadow: 0 0 1px #6cf791;
+}
+  
+input:checked + .slider:before {
+    -webkit-transform: translateX(7vw);
+    -ms-transform: translateX(7vw);
+    transform: translateX(7vw);
+}
+  
+/* Rounded sliders */
+.slider.round {
+    border-radius: 50px;
+}
+  
+.slider.round:before {
+    border-radius: 50%;
+}
+
+.switch .text{
+    z-index: 100;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row;
+    display: none;
+}
+
+.switchParent{
+    color: white;
+    margin-left: 5vw;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
 }

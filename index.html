@@ -4,11 +4,15 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HuperBarioBruce2</title>
+    <title>Voldy's legacy</title>
     <link href="style.css" rel="stylesheet">
     <script src="script.js"></script>
 </head>
 <body>
+    <div id="errorRatio">
+        <h1>| La taille de la fenêtre n'est pas optimale pour jouer |</h1>
+        <p>Veuillez redimensionner la fenêtre pour obtenir un ratio valide.</p>
+    </div>
     <div id="menu">
         <div class="show">
             <div class="arrow1">
@@ -31,10 +35,23 @@
             <div class="heart"></div>
             <div class="heart"></div>
             <div id="question" class="question">i</div>
+
+            <div class="switchParent">
+                <p>120hz</p>
+                <label class="switch">
+                    <div class="text">
+                        <p id="ch1">60</p>
+                        <p id="ch2">120</p>
+                    </div>
+                    
+                    <input id="fpsValue" type="checkbox">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+
             <div class="tempsEcoule"></div>
         </div>
 
-        <div class="fusion"></div>
         <div class="timersLvl"></div>
 
         <div class="lineLevels">
@@ -45,23 +62,25 @@
             <div class="dottedLine dottedLine2"></div>
         </div>
     </div>
-    <div id="intro" class="endIntro"> 
+    <div id="intro" class=""> 
         <!-- TODO retirer la class endIntro pour jouer après -->
         <div class="textIntro"></div>
         <div class="textIntro"></div>
         <div class="textIntro"></div>
         <button id="passText">Passer l'introduction</button>
         <div class="lineJouer">
-            <button id="jouerBtn" class="jouerBtn"><div class="effect1"></div><div class="effect2"></div> <div class="text">Jouer</div></button>
-            <button id="pasJouerBtn" class="jouerBtn"><div class="effect1"></div><div class="effect2"></div> <div class="text">Pas jouer</div></button>
+            <button id="jouerBtn" class="jouerBtn"><div class="effect1"></div><div class="effect2"></div> <div class="text">Aider</div></button>
+            <button id="pasJouerBtn" class="jouerBtn"><div class="effect1"></div><div class="effect2"></div> <div class="text">Pas aider</div></button>
         </div>
-        <div id="pasJouerText">Aller stp aide le !</div>
+        <div id="pasJouerText">Ça c'est pas cool mec, aide le !</div>
     </div>
     <div id="outro">
         <div class="textIntro"></div>
         <div class="textIntro"></div>
-        <div class="textIntro"></div>
-        <div class="textIntro"></div>
+        <div class="lineJouer">
+            <button id="rejouerBtn" class="jouerBtn">Rejouer</button>
+        </div>
+        
     </div>
     <canvas></canvas>
     
