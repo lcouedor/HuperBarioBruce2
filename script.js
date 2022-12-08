@@ -929,7 +929,7 @@ addEventListener('DOMContentLoaded', () => {
 
         if(jeuFini()){
             paused = true
-            // createOutro()
+            createOutro()
         }
     }
     majContentMenu()
@@ -965,7 +965,7 @@ addEventListener('DOMContentLoaded', () => {
 
         await waitForMs(delayParagraphe);
 
-        let text2 = "Mais Voldemort aussi à ses problèmes. Mardi dernier Harry lui a volé son nez ! C'est vraiment pas nice..."
+        let text2 = "Mais Voldemort aussi a ses problèmes. Mardi dernier Harry lui a volé son nez ! C'est vraiment pas nice..."
         letters = text2.split("")
         i=0
         while(i<letters.length){
@@ -976,7 +976,7 @@ addEventListener('DOMContentLoaded', () => {
 
         await waitForMs(delayParagraphe);
 
-        let text3 = "Guide Voldy jusqu'à Poudlard pour trouver Harry et récupérer ses fosses nasales héritées de son grand-oncle. Fais bien attention aux mangetesmorts qui ont changé de camp et surveillent maintenant les alentours pour protéger Harry des forces du mal. Tu as "+timeToBeat+"s pour récupérer son nez avant qu'Harry ne le transforme en morve de troll, bonne chance !"
+        let text3 = "Guide Voldy jusqu'à Poudlard pour trouver Harry et récupérer les fosses nasales qu'il a hérités de son grand-oncle. Fais bien attention aux mangetesmorts qui ont changé de camp et surveillent maintenant les alentours pour protéger Harry des forces du mal. Tu as "+timeToBeat+"s pour récupérer son nez avant qu'Harry ne le transforme en crasse de troll, bonne chance !"
         letters = text3.split("")
         i=0
         while(i<letters.length){
