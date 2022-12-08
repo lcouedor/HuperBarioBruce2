@@ -38,7 +38,7 @@ addEventListener('DOMContentLoaded', () => {
     }
 
     const gravity = 1.5
-    const distToWin = 4000 //distance à parcourir avant de valider le niveau
+    let distToWin = 4000 //distance à parcourir avant de valider le niveau
     const tabImgPlayer = [[createImage("assets/img/voldy/VoldyStand0.png"), 
                             createImage("assets/img/voldy/VoldyRunLeft1.png"), 
                             createImage("assets/img/voldy/VoldyRunLeft1.png")],
@@ -223,7 +223,7 @@ addEventListener('DOMContentLoaded', () => {
         niveauFini[i] = false
     }
     let inf = 999999999999
-    let timeToBeat = 55 //le temps disponible pour compléter tous les niveaux pour débloquer la fin
+    let timeToBeat = 45 //le temps disponible pour compléter tous les niveaux pour débloquer la fin
     let chrono;
     let bestTime = new Array(nbNiveau) //le meilleur temps par niveau
     for(let i=0; i<nbNiveau; i++){
@@ -249,6 +249,7 @@ addEventListener('DOMContentLoaded', () => {
 
     //la création des niveaux
     function createLevel1(){
+        distToWin = 4000
         platforms = [
             new Platform(430,150,100,platformHeight,createImage("assets/img/platform.png")),
             new Platform(600,60,50,platformHeight*2,createImage("assets/img/platform.png")),
@@ -275,48 +276,143 @@ addEventListener('DOMContentLoaded', () => {
 
         lakitupas = [
             new Player(300,100,"lakitupa", 50, 300),
-            // new Player(400,100,"lakitupa")
+            new Player(300,100,"lakitupa", 50, 300),
+            new Player(1600,100,"lakitupa", 50, 300),
+            new Player(1800,100,"lakitupa", 50, 300),
+            new Player(3200,700,"lakitupa", 50, 300),
+            new Player(3250,700,"lakitupa", 50, 300),
+            new Player(3300,700,"lakitupa", 50, 300),
+            new Player(3350,700,"lakitupa", 50, 300),
+            new Player(3400,700,"lakitupa", 50, 300),
+            new Player(3450,700,"lakitupa", 50, 300),
+            new Player(3500,700,"lakitupa", 50, 300),
+            new Player(3550,700,"lakitupa", 50, 300),
+            new Player(3600,700,"lakitupa", 50, 300),
+            new Player(3650,700,"lakitupa", 50, 300),
+            new Player(3650,700,"lakitupa", 50, 300),
+            new Player(3700,700,"lakitupa", 50, 300),
+            new Player(3750,700,"lakitupa", 50, 300),
+            new Player(3800,700,"lakitupa", 50, 300),
+            new Player(3850,700,"lakitupa", 50, 300),
+            new Player(3630,700,"lakitupa", 50, 300),
+            new Player(3830,700,"lakitupa", 50, 300),
+            new Player(3420,700,"lakitupa", 50, 300),
+            new Player(3740,700,"lakitupa", 50, 300),
+            new Player(3900,700,"lakitupa", 50, 300)
         ]
     }
 
-    function createLevel2(){
-        platforms = [
-            //les tuyaux
-            new Platform(600,700,50,80,createImage("assets/img/platform.png")),
-            //les plateformes
-            new Platform(450,670,100,40,createImage("assets/img/platform.png")), 
-            new Platform(650,610,100,40,createImage("assets/img/platform.png")),
-            //le sol
-            new Platform(0,0,900,100, createImage("assets/img/grass.png")),
-            new Platform(1000,0,30000,100, createImage("assets/img/grass.png"))]
-
-            genericOjects = [
-                new GenericObject (0, 0, imgBg, "background"),
-                new GenericObject (distToWin+offsetPlayerRight, minPosYplat, imgChateau, "chateau")]
-    }
-
     function createLevel3(){
+        distToWin = 4000
         platforms = [
-            //les tuyaux
-            new Platform(600,700,50,80,createImage("assets/img/platform.png")),
             //les plateformes
-            new Platform(450,670,100,40,createImage("assets/img/platform.png")), 
-            new Platform(650,610,100,40,createImage("assets/img/platform.png")),
+            new Platform(550,130,100,50,createImage("assets/img/platform.png")),
+            new Platform(650,130,50,130,createImage("assets/img/platform.png")), 
+            new Platform(620,520,50,300,createImage("assets/img/platform.png")),
+            new Platform(770,230,200,50,createImage("assets/img/platform.png")),
+            new Platform(1050,330,50,250,createImage("assets/img/platform.png")),
+            new Platform(1200,450,50,250,createImage("assets/img/platform.png")),
+            new Platform(1350,350,50,250,createImage("assets/img/platform.png")),
+            new Platform(1500,450,50,250,createImage("assets/img/platform.png")),
+            new Platform(1650,530,500,50,createImage("assets/img/platform.png")),
+            new Platform(2300,530,50,500,createImage("assets/img/platform.png")),
+            new Platform(2800,130,50,100,createImage("assets/img/platform.png")),
             //le sol
-            new Platform(0,0,900,100, createImage("assets/img/grass.png")),
-            new Platform(1000,0,30000,100, createImage("assets/img/grass.png"))]
+            new Platform(0,0,230,100, createImage("assets/img/grass.png")),
+            new Platform(350,0,50,100, createImage("assets/img/grass.png")),
+            new Platform(500,0,1850,100, createImage("assets/img/grass.png")),
+            new Platform(2570,0,1430,100, createImage("assets/img/grass.png")),
+            new Platform(4125,-groundHeight,50,100, createImage("assets/img/grass.png")),
+            new Platform(4250,0,1500,100, createImage("assets/img/grass.png"))]
 
             genericOjects = [
                 new GenericObject (0, 0, imgBg, "background"),
                 new GenericObject (distToWin+offsetPlayerRight, minPosYplat, imgChateau, "chateau")]
+
+            lakitupas = [
+                new Player(560,700,"lakitupa", 50, 300),
+                new Player(2700,100,"lakitupa", 100, 0),
+                new Player(3200,100,"lakitupa", 30, 30),
+                new Player(3210,100,"lakitupa", 30, 30),
+                new Player(3220,100,"lakitupa", 30, 30),
+                new Player(3230,100,"lakitupa", 30, 30),
+                new Player(3240,100,"lakitupa", 30, 30),
+                new Player(3250,100,"lakitupa", 30, 30),
+                new Player(3260,100,"lakitupa", 30, 30),
+                new Player(3270,100,"lakitupa", 30, 30),
+                new Player(3280,100,"lakitupa", 30, 30),
+                new Player(3290,100,"lakitupa", 30, 30),
+                new Player(3300,100,"lakitupa", 30, 30),
+                new Player(3310,100,"lakitupa", 30, 30),
+                new Player(3320,100,"lakitupa", 30, 30),
+                new Player(3200,100,"lakitupa", 30, 30),
+                new Player(3330,100,"lakitupa", 30, 30),
+                new Player(3340,100,"lakitupa", 30, 30),
+                new Player(3500,100,"lakitupa", 30, 30),
+                new Player(3360,100,"lakitupa", 30, 30),
+                new Player(3370,100,"lakitupa", 30, 30),
+                new Player(3380,100,"lakitupa", 30, 30),
+                new Player(3390,100,"lakitupa", 30, 30),
+                new Player(3400,100,"lakitupa", 30, 30),
+                new Player(3410,100,"lakitupa", 30, 30),
+                new Player(3420,100,"lakitupa", 30, 30),
+                new Player(3430,100,"lakitupa", 30, 30),
+                new Player(3440,100,"lakitupa", 30, 30),
+                new Player(3450,100,"lakitupa", 30, 30),
+                new Player(3460,100,"lakitupa", 30, 30),
+                new Player(3470,100,"lakitupa", 30, 30),
+                new Player(3480,100,"lakitupa", 30, 30),
+                new Player(3490,100,"lakitupa", 30, 30),
+                new Player(3500,100,"lakitupa", 30, 30),
+                new Player(3510,100,"lakitupa", 30, 30),
+                new Player(3520,100,"lakitupa", 30, 30),
+                new Player(3530,100,"lakitupa", 30, 30),
+                new Player(3540,100,"lakitupa", 30, 30),
+                new Player(3550,100,"lakitupa", 30, 30),
+                new Player(3560,100,"lakitupa", 30, 30),
+                new Player(3570,100,"lakitupa", 30, 30),
+                new Player(3580,100,"lakitupa", 30, 30),
+                new Player(3590,100,"lakitupa", 30, 30),
+                new Player(3600,100,"lakitupa", 30, 30),
+                new Player(3600,100,"lakitupa", 30, 30),
+                new Player(3610,100,"lakitupa", 30, 30),
+                new Player(3620,100,"lakitupa", 30, 30)]
     }
 
-    //TODO supprimer -> get coordinates pour placer les élément game design des niveaux
-    document.getElementsByTagName("body")[0].addEventListener("click", (e)=>{
-        console.log(e.pageX+scrollOffset,e.pageY)
-    })
+    function createLevel2(){
+        distToWin = 2500
+        platforms = [
+            //les plateformes
+            new Platform(1800,100,50,100,createImage("assets/img/platform.png")),
+            new Platform(1950,200,50,200,createImage("assets/img/platform.png")), 
+            new Platform(2100,300,50,200,createImage("assets/img/platform.png")),
+            new Platform(2250,400,50,200,createImage("assets/img/platform.png")),
+            new Platform(2400,500,50,200,createImage("assets/img/platform.png")),
+            new Platform(2550,600,50,200,createImage("assets/img/platform.png")),
+            new Platform(2700,500,200,50,createImage("assets/img/platform.png")),
+            new Platform(2900,700,50,500,createImage("assets/img/platform.png")),
+            //le sol
+            new Platform(0,0,200,100, createImage("assets/img/grass.png")),
+            new Platform(350,0,50,100, createImage("assets/img/grass.png")),
+            new Platform(550,0,25,100, createImage("assets/img/grass.png")),
+            new Platform(675,0,12,100, createImage("assets/img/grass.png")),
+            new Platform(800,0,5,100, createImage("assets/img/grass.png")),
+            new Platform(950,0,2,100, createImage("assets/img/grass.png")),
+            new Platform(1100,50,200,100, createImage("assets/img/grass.png")),
+            new Platform(1450,25,30000,100, createImage("assets/img/grass.png"))]
 
-    let multFreshRate
+            genericOjects = [
+                new GenericObject (0, 0, imgBg, "background"),
+                new GenericObject (distToWin+offsetPlayerRight, minPosYplat, imgChateau, "chateau")]
+
+            lakitupas = [
+                new Player(1200,500,"lakitupa", 100, 100),
+                new Player(2300,500,"lakitupa", 400, 400),
+                new Player(2575,100,"lakitupa", 0, 0),
+                new Player(2600,500,"lakitupa", 0, 0),
+                new Player(2800,100,"lakitupa", 100, 100),
+            ]
+    }
 
     //initialisation des variables de l'environnement
     function init(){
@@ -833,7 +929,7 @@ addEventListener('DOMContentLoaded', () => {
 
         if(jeuFini()){
             paused = true
-            createOutro()
+            // createOutro()
         }
     }
     majContentMenu()
@@ -940,7 +1036,6 @@ addEventListener('DOMContentLoaded', () => {
         document.getElementsByClassName("lineJouer")[1].classList.add("growthEffect")
         document.getElementsByClassName("lineJouer")[1].style.cssText+="transform: scale(1);"
 
-        // location.reload()
     }
 
 })
