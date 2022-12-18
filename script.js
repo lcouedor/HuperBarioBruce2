@@ -28,9 +28,10 @@ addEventListener('DOMContentLoaded', () => {
         canvas.width = window.innerWidth
         canvas.height = window.innerHeight
         minPosYplat = canvas.height-groundHeight
-        let ratio = canvas.width/canvas.height
 
-        if(!(ratio>1.2 && ratio < 2) || canvas.width<canvas.height || canvas.height<650){
+        let ratio = canvas.width/canvas.height
+        if(canvas.width<canvas.height || canvas.height<650 || canvas.width<900){
+        // if(!(ratio>1.2 && ratio < 2) || canvas.width<canvas.height || canvas.height<650){
             domErreurRatio.classList.remove("ratioCorrect")
         }else{
             domErreurRatio.classList.add("ratioCorrect")
