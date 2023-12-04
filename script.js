@@ -40,12 +40,12 @@ addEventListener('DOMContentLoaded', () => {
 
     const gravity = 1.2
     let distToWin = 4000 //distance à parcourir avant de valider le niveau
-    const tabImgPlayer = [[createImage("assets/img/voldy/VoldyStand0.png"), 
-                            createImage("assets/img/voldy/VoldyRunLeft1.png"), 
-                            createImage("assets/img/voldy/VoldyRunLeft1.png")],
-                            [createImage("assets/img/voldy/VoldyStand1.png"), 
-                            createImage("assets/img/voldy/VoldyRunRight1.png"), 
-                            createImage("assets/img/voldy/VoldyRunRight2.png")]]
+    const tabImgPlayer = [[createImage("assets/img/voldy/voldyStand0.png"), 
+                            createImage("assets/img/voldy/voldyRunLeft1.png"), 
+                            createImage("assets/img/voldy/voldyRunLeft1.png")],
+                            [createImage("assets/img/voldy/voldyStand1.png"), 
+                            createImage("assets/img/voldy/voldyRunRight1.png"), 
+                            createImage("assets/img/voldy/voldyRunRight2.png")]]
 
     const tabImageLakitupa = [[createImage("assets/img/chiffon/chiffonGauche.png")],
                             [createImage("assets/img/chiffon/chiffonDroit.png")]]
@@ -120,8 +120,7 @@ addEventListener('DOMContentLoaded', () => {
                 this.image = tabImageLakitupa[this.sens][this.nbImageLakitupa]
                 c.drawImage(this.image, this.position.x, this.position.y, this.width, this.height)
             }else{
-                //this.image = tabImgPlayer[this.sens][this.nbImagePlayer%tabImgPlayer[0].length]
-                c.drawImage(tabImgPlayer[this.sens][0], this.position.x, this.position.y, this.width, this.height)
+                c.drawImage(tabImgPlayer[sens][nbImagePlayer%tabImgPlayer[0].length], this.position.x, this.position.y, this.width, this.height)
             }
             
         }
