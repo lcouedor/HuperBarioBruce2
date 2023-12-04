@@ -38,7 +38,7 @@ addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    const gravity = 1.5
+    const gravity = 1.2
     let distToWin = 4000 //distance à parcourir avant de valider le niveau
     const tabImgPlayer = [[createImage("assets/img/voldy/VoldyStand0.png"), 
                             createImage("assets/img/voldy/VoldyRunLeft1.png"), 
@@ -82,11 +82,13 @@ addEventListener('DOMContentLoaded', () => {
                 this.width = this.image.width/10
                 this.height = this.image.height/10
             }else{
-                if(!document.getElementById("fpsValue").checked){
-                    this.speed = 5*2
-                }else{
-                    this.speed = 5
-                }
+                //TODO switch frame rate
+                // if(!document.getElementById("fpsValue").checked){
+                //     this.speed = 5*2
+                // }else{
+                //     this.speed = 5
+                // }
+                this.speed = 5
                 this.image = null
                 this.width = 50
                 this.height = 70
@@ -454,7 +456,10 @@ addEventListener('DOMContentLoaded', () => {
 
         checkRatio()
 
-        requestAnimationFrame(animate) //callback animation
+        //on relance l'animation chaque 10ms
+        setTimeout(animate, 10)
+        // requestAnimationFrame(animate) //callback animation
+
         c.clearRect(0,0,canvas.width,canvas.height) //clear complet avant de tout réafficher
 
         //si le jeu n'est pas en cours (on est dans un menu, une animation, ...)
@@ -667,8 +672,6 @@ addEventListener('DOMContentLoaded', () => {
 
     init()
     animate()
-
-    let lastJump = Date.now() //limiter les multiples sauts en l'air
     addEventListener('keydown', ({ keyCode }) => {
         switch (keyCode) {
             case 37:
@@ -678,9 +681,8 @@ addEventListener('DOMContentLoaded', () => {
                 keys.right.pressed = true
                 break
             case 38:
-                let now = Date.now()
-                if(now-lastJump>150){
-                    lastJump = now
+                //Interdir le saut si le joueur est en l'air
+                if(player.velocity.y == 0){
                     player.velocity.y-= player.jumpHeight
                 }
                 break
