@@ -89,7 +89,7 @@ addEventListener('DOMContentLoaded', () => {
                 //     this.speed = 5
                 // }
                 this.speed = 5
-                this.image = null
+                this.image = tabImgPlayer[0][0]
                 this.width = 50
                 this.height = 70
             }
@@ -120,8 +120,8 @@ addEventListener('DOMContentLoaded', () => {
                 this.image = tabImageLakitupa[this.sens][this.nbImageLakitupa]
                 c.drawImage(this.image, this.position.x, this.position.y, this.width, this.height)
             }else{
-                this.image = tabImgPlayer[this.sens][nbImagePlayer%tabImgPlayer[0].length]
-                c.drawImage(this.image, this.position.x, this.position.y, this.width, this.height)
+                //this.image = tabImgPlayer[this.sens][this.nbImagePlayer%tabImgPlayer[0].length]
+                c.drawImage(tabImgPlayer[this.sens][0], this.position.x, this.position.y, this.width, this.height)
             }
             
         }
