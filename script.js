@@ -120,7 +120,8 @@ addEventListener('DOMContentLoaded', () => {
                 this.image = tabImageLakitupa[this.sens][this.nbImageLakitupa]
                 c.drawImage(this.image, this.position.x, this.position.y, this.width, this.height)
             }else{
-                c.drawImage(tabImgPlayer[sens][nbImagePlayer%tabImgPlayer[0].length], this.position.x, this.position.y, this.width, this.height)
+                this.image = tabImgPlayer[this.sens][nbImagePlayer%tabImgPlayer[0].length]
+                c.drawImage(this.image, this.position.x, this.position.y, this.width, this.height)
             }
             
         }
